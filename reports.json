@@ -1,0 +1,11 @@
+[
+  {
+    "slug": "long-horizon-rl-customer-service",
+    "title": "客服对话仿真系统下的长序强化学习训练",
+    "date": "2026-05-31",
+    "summary": "客服 RL 训练的核心瓶颈不在算法，而在仿真器和奖励模型的双重不可靠。覆盖仿真环境、长序 RL 算法、奖励建模、工业落地四方向，24 个信息源，8479 汉字。最关键发现:CSRL benchmark + CollabLLM 的 MR。",
+    "tags": ["reinforcement-learning", "customer-service", "LLM", "research"],
+    "sources": 24,
+    "chars": 8479
+  }
+]
