@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能客服拟人性调研报告 · 京东外卖</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --panel: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #e5e3dc;
+    --accent: #b5651d;
+    --accent-soft: #fff4e6;
+    --code-bg: #2b2b2b;
+    --code-ink: #f8f8f2;
+    --green: #2d7a4f;
+    --green-soft: #e8f5ed;
+    --red: #b03030;
+    --red-soft: #fdecec;
+    --blue: #2960a8;
+    --blue-soft: #e7f0fa;
+    --yellow: #b88600;
+    --yellow-soft: #fff8d6;
+    --purple: #6b4099;
+    --purple-soft: #f1ebf7;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 0;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  nav.toc {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    padding: 28px 20px;
+    font-size: 13px;
+  }
+  nav.toc h3 {
+    margin: 0 0 12px 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; counter-reset: toc; }
+  nav.toc li { counter-increment: toc; margin: 6px 0; }
+  nav.toc a {
+    color: var(--ink);
+    text-decoration: none;
+    display: block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  nav.toc a:hover {
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+    color: var(--accent);
+  }
+  main { padding: 48px 56px; }
+  header.report-head {
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--accent);
+  }
+  header.report-head h1 {
+    font-size: 28px;
+    margin: 0 0 12px 0;
+    line-height: 1.3;
+  }
+  header.report-head .meta {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .stats .stat {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  h2 {
+    font-size: 22px;
+    margin: 40px 0 20px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: 20px;
+  }
+  h3 {
+    font-size: 17px;
+    margin: 24px 0 12px 0;
+  }
+  h4 {
+    font-size: 15px;
+    margin: 18px 0 8px 0;
+  }
+  p { margin: 12px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  a:hover { background: var(--accent-soft); }
+  strong { color: #000; font-weight: 600; }
+  code {
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    background: #f0ede4;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: #553311;
+  }
+  blockquote {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    margin: 16px 0;
+    padding: 12px 16px;
+    color: #4a3a20;
+    border-radius: 0 4px 4px 0;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 14px;
+    background: var(--panel);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    background: #f5f2e9;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fcfaf3; }
+  /* 案例卡片 */
+  .case-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--blue);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin: 14px 0;
+  }
+  .case-card.jd { border-left-color: var(--red); }
+  .case-card.meituan { border-left-color: var(--yellow); }
+  .case-card.ali { border-left-color: var(--accent); }
+  .case-card.intercom { border-left-color: var(--blue); }
+  .case-card.sierra { border-left-color: var(--purple); }
+  .case-card .case-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .case-card .case-title { font-weight: 600; font-size: 16px; }
+  .case-card .case-rating { font-size: 13px; color: var(--accent); }
+  .case-card .case-scene { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .case-card .case-practice { font-size: 14px; line-height: 1.7; }
+  .case-card .case-take { font-size: 13px; color: #4a3a20; background: var(--accent-soft); padding: 8px 12px; border-radius: 4px; margin-top: 10px; }
+
+  /* 折叠 */
+  details {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+  details > summary {
+    cursor: pointer;
+    padding: 12px 16px;
+    background: #f5f2e9;
+    font-weight: 600;
+    user-select: none;
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary::before {
+    content: "▶";
+    margin-right: 8px;
+    color: var(--accent);
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > .details-body { padding: 14px 18px; }
+
+  /* 标签 */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .tag.jd { background: var(--red-soft); color: var(--red); }
+  .tag.meituan { background: var(--yellow-soft); color: var(--yellow); }
+  .tag.ali { background: var(--accent-soft); color: var(--accent); }
+  .tag.intercom { background: var(--blue-soft); color: var(--blue); }
+  .tag.sierra { background: var(--purple-soft); color: var(--purple); }
+  .tag.p0 { background: var(--red-soft); color: var(--red); }
+  .tag.p1 { background: var(--yellow-soft); color: var(--yellow); }
+  .tag.p2 { background: var(--blue-soft); color: var(--blue); }
+
+  /* 差距 / 风险 / 机会 */
+  .gap-box {
+    background: var(--red-soft);
+    border-left: 3px solid var(--red);
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    margin: 12px 0;
+  }
+  .gap-box .gap-title { font-weight: 600; color: var(--red); margin-bottom: 6px; }
+  .opp-box {
+    background: var(--green-soft);
+    border-left: 3px solid var(--green);
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    margin: 12px 0;
+  }
+  .note-box {
+    background: var(--blue-soft);
+    border-left: 3px solid var(--blue);
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    margin: 12px 0;
+    font-size: 14px;
+  }
+
+  /* checklist */
+  .checklist {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .checklist h4 { margin-top: 0; }
+  .checklist label {
+    display: block;
+    padding: 6px 0;
+    cursor: pointer;
+    border-bottom: 1px dashed var(--line);
+    font-size: 14px;
+  }
+  .checklist label:last-child { border-bottom: none; }
+  .checklist input[type="checkbox"] { margin-right: 10px; transform: scale(1.1); }
+  .checklist input[type="checkbox"]:checked + span {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  /* 阶段时间线 */
+  .timeline {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .timeline .stage {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    height: fit-content;
+  }
+  .timeline .stage-content { font-size: 14px; }
+
+  /* 回到顶部 */
+  .top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    font-size: 20px;
+    display: none;
+    z-index: 100;
+  }
+  .top-btn.show { display: block; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px; }
+    .timeline { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    nav.toc, .top-btn { display: none; }
+    .layout { display: block; }
+    main { padding: 0; }
+    details > .details-body { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#bg">业务背景</a></li>
+      <li><a href="#cases">一、行业案例库</a></li>
+      <li><a href="#analysis">二、四维度做法对比</a></li>
+      <li><a href="#gaps">三、京东外卖差距诊断</a></li>
+      <li><a href="#eval">四、仿真环境拟人性评测</a></li>
+      <li><a href="#priority">五、改造优先级表</a></li>
+      <li><a href="#refs">附录：信息来源</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <header class="report-head" id="bg">
+      <h1>智能客服拟人性调研报告 · 京东外卖</h1>
+      <div class="meta">
+        <span>业务背景：京东外卖客服（催单 / 退款 / 骑手等场景）</span>
+        <span>调研维度：语言语气 · 情感共情 · 对话节奏 · 评测度量</span>
+      </div>
+      <div class="stats">
+        <span class="stat">5 个行业案例</span>
+        <span class="stat">4 大分析维度</span>
+        <span class="stat">4 个差距点</span>
+        <span class="stat">7 项改造提案</span>
+        <span class="stat">P0 / P1 / P2 优先级</span>
+      </div>
+    </header>
+
+    <!-- 一、案例库 -->
+    <section id="cases">
+      <h2>一、行业案例库</h2>
+      <p>覆盖 5 个有代表性的客服系统，按场景紧密度评分。</p>
+
+      <div class="case-card jd">
+        <div class="case-head">
+          <div><span class="tag jd">京东集团</span><span class="case-title">京东 JIMI / 言犀大模型</span></div>
+          <div class="case-rating">★★★★★ 同集团可直接借鉴</div>
+        </div>
+        <div class="case-scene">场景：京东商城售前售后（电商主站）</div>
+        <div class="case-practice">
+          <strong>拟人化关键做法</strong>：
+          <ol>
+            <li>语气词（「哦~」「~」）+ 情绪反馈（「感谢您！」）</li>
+            <li>IP 形象 + 昵称定制</li>
+            <li>用户画像驱动个性化（性格 / 爱好 / 习惯）</li>
+            <li>「场景 → 需求判断 → 答案」对话进化</li>
+            <li>言犀大模型把情感分析列为六大核心能力，识别愤怒/焦虑/满意并调整应答</li>
+          </ol>
+        </div>
+        <div class="case-take"><strong>判断</strong>：外卖场景的「催单/骑手」诉求强度远高于电商售后，话术需要重新设计。</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--muted);">证据：<a href="https://ec.pconline.com.cn/836/8366322.html">pconline</a> · <a href="https://www.woshipm.com/pd/5681203.html">人人都是产品经理</a> · <a href="https://www.idctalk.com/yanxi-jd.html">IDCTalk</a> · <a href="https://www.813zy.com/news/qianyanjishu/621.html">53AI</a> · <a href="https://agispace.feishu.cn/wiki/Nncjwhe4RixLOAkhASRcq2danKf">飞书云文档</a></div>
+      </div>
+
+      <div class="case-card meituan">
+        <div class="case-head">
+          <div><span class="tag meituan">竞品</span><span class="case-title">美团智能客服</span></div>
+          <div class="case-rating">★★★★★ 直接对标，整套架构可借鉴</div>
+        </div>
+        <div class="case-scene">场景：外卖售中 / 售后（催单是公开案例）</div>
+        <div class="case-practice">
+          <strong>拟人化关键做法</strong>：
+          <ol>
+            <li>六大能力：问题推荐 / 理解 / 对话管理 / 答案供给 / 话术推荐 / 会话摘要</li>
+            <li>催单场景明确：实时取订单+骑手位置+ETA，<strong>先安抚后给方案</strong></li>
+            <li>对话管理走 Task-flow 人工配置 + 语义匹配做分支决策（算法和业务解耦）</li>
+            <li>用 itemCF 建事件图谱做关联问题推荐（Task 间调度）</li>
+            <li>大模型时代引入语义+情绪识别，识别「生气/焦虑」触发安抚或自动转人工</li>
+            <li>答案由业务人员预配置话术，算法负责路由</li>
+          </ol>
+        </div>
+        <div class="case-take"><strong>判断</strong>：外卖业务一致，架构思路（Task-flow + 情绪路由）可整套借鉴。</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--muted);">证据：<a href="https://zhuanlan.zhihu.com/p/420221299">知乎-核心技术</a> · <a href="https://zhuanlan.zhihu.com/p/406411712">知乎-技术实践</a> · <a href="https://cloud.tencent.com/developer/article/1998601">腾讯云</a> · <a href="https://blog.csdn.net/MeituanTech/article/details/120574272">CSDN-美团 Tech</a></div>
+      </div>
+
+      <div class="case-card ali">
+        <div class="case-head">
+          <div><span class="tag ali">同业</span><span class="case-title">阿里小蜜 / 店小蜜</span></div>
+          <div class="case-rating">★★★★ 框架可借鉴，话术差异大</div>
+        </div>
+        <div class="case-scene">场景：淘宝天猫电商售前售后（消费者侧 + 商家侧）</div>
+        <div class="case-practice">
+          <strong>拟人化关键做法</strong>：
+          <ol>
+            <li>「智能 + 人工」拟人交互体验为产品愿景</li>
+            <li>双 11 智能解决率 <strong>93.1%</strong>，单日 200 万轮（2017）</li>
+            <li>两层架构：意图识别层（上下文 + 领域推理）+ 问答匹配层</li>
+            <li>多轮：意图触发后按预编排流程收集参数，调业务接口</li>
+            <li>个性化：个性化称呼、「猜你想问」（基于促销+用户偏好预测下一问）、服务管家（结果主动推送）</li>
+            <li><strong>情绪能力三方向</strong>：客户情绪安抚 / 客服质量检测 / 情绪生成式语聊</li>
+            <li>数字人多模态交互探索</li>
+          </ol>
+        </div>
+        <div class="case-take"><strong>判断</strong>：「情绪三方向」框架可整体迁移；「猜你想问」对外卖催单是关键启发。</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--muted);">证据：<a href="https://zhuanlan.zhihu.com/p/69976631">知乎-情绪回复</a> · <a href="https://blog.csdn.net/tiweeny/article/details/81475957">CSDN-技术整理</a> · <a href="https://www.ithome.com/0/383/830.htm">IT 之家</a> · <a href="https://www.shangyexinzhi.com/article/4269547.html">商业新知-数字人</a></div>
+      </div>
+
+      <div class="case-card intercom">
+        <div class="case-head">
+          <div><span class="tag intercom">海外</span><span class="case-title">Intercom Fin AI</span></div>
+          <div class="case-rating">★★★★ Tone 预设值得产品化</div>
+        </div>
+        <div class="case-scene">场景：SaaS / 多行业客服（B2B 为主）</div>
+        <div class="case-practice">
+          <strong>拟人化关键做法</strong>：
+          <ol>
+            <li>定位为「第一个提供人类品质服务的 AI Agent」，刻意区分 chatbot</li>
+            <li><strong>可配置 Tone of Voice</strong>：Professional / Friendly / Playful 多种预设</li>
+            <li>Persona：自定义名字+头像+行为边界（guidelines），透明告知「我是 AI」</li>
+            <li>自适应：识别情绪后动态调措辞（不满时更体贴）</li>
+            <li>共情先于答案：识别到沮丧/困惑时先说「I understand this is frustrating」</li>
+            <li>平滑转人工：超出能力或情绪需要时转人工，附完整上下文</li>
+          </ol>
+        </div>
+        <div class="case-take"><strong>判断</strong>：Tone 预设和 persona 边界两件事是 SaaS 标配，外卖可直接做「语气包」产品化。</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--muted);">证据：<a href="https://www.intercom.com/">Intercom 官网</a> · <a href="http://www.getfin.com/">Fin AI Agent</a></div>
+      </div>
+
+      <div class="case-card sierra">
+        <div class="case-head">
+          <div><span class="tag sierra">海外</span><span class="case-title">Sierra AI（Bret Taylor 创立）</span></div>
+          <div class="case-rating">★★★★ 护栏 + 按结果付费值得借鉴</div>
+        </div>
+        <div class="case-scene">场景：跨行业（SiriusXM / ADT 家防等大客户）</div>
+        <div class="case-practice">
+          <strong>拟人化关键做法</strong>：
+          <ol>
+            <li>Bret Taylor 公开反 chatbot 概念，主推「empathetic AI agent」</li>
+            <li>品牌个性化人设：每个企业的 AI agent 有独特品牌人设（语气 + 性格）</li>
+            <li><strong>Guardrails 护栏机制</strong>：敏感场景（如丧亲请求）必须有规则防止幻觉编造政策</li>
+            <li><strong>按结果付费</strong>商业模式（成功解决才收费）反向驱动质量</li>
+            <li>强调「用户实际很喜欢这些 agent」——共情设计直接体现在 NPS 和留存</li>
+          </ol>
+        </div>
+        <div class="case-take"><strong>判断</strong>：「敏感场景护栏」对外卖很关键（食品安全/中毒/吵架等）；「按结果付费」启发 KPI 应从「接通率」切到「解决率+满意度」。</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--muted);">证据：<a href="https://techcrunch.com/video/from-salesforce-co-ceo-to-sierra-bret-taylors-journey-in-tech-innovation-techcrunch-disrupt-2024/">TechCrunch Disrupt</a> · <a href="https://new.qq.com/rain/a/20250306A05T9B00">腾讯新闻-Bret Taylor 访谈</a> · <a href="https://news.qq.com/rain/a/20250913A06DLB00">Agent 按结果付费</a></div>
+      </div>
+    </section>
+
+    <!-- 二、四维度对比 -->
+    <section id="analysis">
+      <h2>二、四维度做法对比</h2>
+
+      <details open>
+        <summary>2.1 语言 / 语气</summary>
+        <div class="details-body">
+          <p><strong>京东 JIMI</strong>：语气词收尾（「哦~」），引导词去机器化（「我来助你一臂之力~」），正向情绪反馈（评价成功后补「感谢您！」）。<strong>启示</strong>：拟人化首先是文案层微改造，成本极低。</p>
+          <p><strong>美团客服</strong>：「话术由业务人员预配置 + 算法负责路由」的解耦模式——话术拟人化优化在业务侧。<strong>启示</strong>：要把话术运营 KPI 拎出来（如「机器人口吻满意度」）。</p>
+          <p><strong>阿里小蜜</strong>：个性化称呼 + 生成式语聊（不是纯模板）。<strong>启示</strong>：<strong>模板话术 + 生成式润色</strong> 是目前最务实的方案——业务方写骨架保证准确，LLM 加修饰保证自然。</p>
+          <p><strong>Intercom / Sierra</strong>：Tone 做成可配置预设；Sierra 强调每个品牌独特人设 + guardrails。<strong>启示</strong>：京东外卖应该有<strong>场景化语气包</strong>（催单耐心、投诉共情、骑手简洁），不能一套打天下；同时<strong>敏感场景必须护栏</strong>（食物中毒、过敏、火灾等极端反馈，绝不让 LLM 自由发挥）。</p>
+        </div>
+      </details>
+
+      <details open>
+        <summary>2.2 情感识别与共情回应</summary>
+        <div class="details-body">
+          <p><strong>京东言犀</strong>：情感分析是六大核心能力之一，识别愤怒/焦虑/满意。<strong>启示</strong>：关键不在「识别」，在「识别完之后做了什么」——是否真换了话术分支、是否提速转人工、是否做了对账。</p>
+          <p><strong>美团</strong>：实时监控情绪，触发自动安抚 or 自动转人工。催单标准动作：「先安抚 → 给订单状态 → 给可执行方案」。<strong>启示</strong>：「情感识别 → 触发动作」闭环必须明确，至少 3 个触发动作：A. 切共情话术；B. 提速 ETA / 通知骑手；C. 直接转人工。</p>
+          <p><strong>阿里小蜜「情绪三件套」</strong>：客户情绪安抚 + 客服质量检测 + 情绪生成式语聊。<strong>启示</strong>：外卖共情体系建议按这三层拆。「质检」这层国内大多客服没认真做，是差异化点。</p>
+          <p><strong>Intercom / Sierra</strong>：识别情绪后动态调措辞 + 共情先于答案 + 平滑转人工。<strong>启示</strong>：海外的共识比国内更激进——<strong>共情不是「加一句安抚」，而是整个对话从开场就根据情绪走完全不同的路径</strong>。京东外卖催单可以做：情绪在第一轮就分流，「正常催单」和「暴怒催单」走两套完全不同的话术树+动作树。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>2.3 对话节奏与多轮交互</summary>
+        <div class="details-body">
+          <p><strong>JIMI 三代演进</strong>：关键词→答案 (2012) → 语句→答案 (2012.12) → <strong>场景→需求判断→答案</strong> (2014.5)。<strong>启示</strong>：节奏拟人化的前置条件是「场景级需求判断」，而不是单轮 QA。</p>
+          <p><strong>美团 Task-flow 架构</strong>：四层模块清晰，多轮做 Task 内调度 + Task 间调度（itemCF 事件图谱推荐关联问题）。<strong>启示</strong>：节奏不是「等用户来问」，而是「<strong>预测下一个问题主动给</strong>」。外卖催单可做：用户问完单状态后主动追问「是不是着急？需要我帮您催骑手吗？」。</p>
+          <p><strong>阿里小蜜「猜你想问」+ 服务管家</strong>：预测下一问当 chip 摆出 + 售后流程结束后主动推送。<strong>启示</strong>：节奏拟人化最高境界是「<strong>我比你早一步</strong>」。外卖可做：(1) 用户输入还没发出但识别到关键词时预加载；(2) 骑手送达后主动追问「味道还好吗？」；(3) 退款审核通过主动推送。</p>
+          <p><strong>Intercom / Sierra</strong>：两家都强调「AI agent」而非 chatbot，本质是希望主动推进。Sierra「按结果付费」反向要求 agent 主动闭环。<strong>启示</strong>：外卖客服 KPI 应分出「机器人首轮解决率 / 主动追问转化率 / 用户中断后挽回率」三个细分。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>2.4 评测与度量</summary>
+        <div class="details-body">
+          <p><strong>行业共性问题</strong>：公开资料里 JIMI 只报「大促单日 130 万+ 接待量」这类规模指标，没看到拟人性的量化评测——这是<strong>差异化点</strong>。</p>
+          <p><strong>美团暗示的评测维度</strong>（从架构反推）：「情绪识别准确率」+「转人工时机」+「话术采纳率」。</p>
+          <p><strong>阿里小蜜可量化指标</strong>：双 11 智能解决率 <strong>93.1%</strong>、服务占比 <strong>95%</strong>、单日 200 万轮+。「客服质量检测」隐含一个指标：<strong>客服服务后用户情绪是否变好</strong>（pre→post 情绪极性差）。</p>
+          <p><strong>Sierra「按结果付费」 = 把「解决率」作为终极指标</strong>。<strong>启示</strong>：外卖客服拟人性评测应包含 4 个指标：(1) 解决率（不靠转人工的真实解决）；(2) 情绪转化率（负→中/正）；(3)「你是机器人吗」触发率（越低越拟人）；(4) CSAT / NPS。</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 三、京东外卖差距诊断 -->
+    <section id="gaps">
+      <h2>三、京东外卖现状与差距诊断</h2>
+
+      <h3>3.1 现状速写（公开资料拼图）</h3>
+      <div class="note-box">
+        <strong>集团基础</strong>：京东集团 2017 年起电商主站全线接入 JIMI，11.11 机器人接待占比近 90%、独立解决率 60%+。2023 年起对外推言犀大模型，情感分析为六大核心能力之一。
+      </div>
+
+      <h4>外卖业务实际表现（公开投诉里反复出现的痛点）</h4>
+      <ul>
+        <li>「退押金难，<strong>全程机器人通话</strong>」（<a href="https://tousu.sina.com.cn/complaint/view/17387085310">黑猫 2025-09</a>）</li>
+        <li>「骑手客服是机器人，一直联系不上」（<a href="https://tousu.sina.com.cn/complaint/view/17392261963">黑猫 2026-01</a>）</li>
+        <li>「客服搪塞问题，和机器人有什么区别」（<a href="https://tousu.sina.com.cn/complaint/view/17391458529">黑猫</a>）</li>
+        <li>拒不出餐场景「京东客服仅回复了一条<strong>模板化的引导消息</strong>，让用户自行通过 APP 联系在线客服」（<a href="https://tousu.sina.cn/complaint/view/17382167904">黑猫 2025</a>）</li>
+      </ul>
+
+      <h4>行业共性翻车（外卖业务集体患病）</h4>
+      <p>用户气急说「AI 退退退」，AI 直接执行退款；用户怎么挽回 AI 都只会「道歉+补 5 元红包」——证明语义理解和情感反馈都没做到位（<a href="https://news.qq.com/rain/a/20250815A07D2Q00">腾讯新闻 2025-08</a>）。</p>
+
+      <blockquote>
+        <strong>结论</strong>：京东外卖客服机器人体验<strong>明显滞后于京东电商主站</strong>，集团有能力但没下沉到外卖业务；投诉里直接点名「机器人话术」是核心抱怨。
+      </blockquote>
+
+      <h3>3.2 差距点（按四维度归类）</h3>
+
+      <div class="gap-box">
+        <div class="gap-title">差距 1：语气产品化缺失 — 「机器人话术」是用户直接抱怨的词</div>
+        <p><strong>对标</strong>：Intercom Fin 多语气预设；阿里小蜜个性化称呼 + 生成式润色；JIMI 主站靠语气词和情绪反馈做文案级拟人。</p>
+        <p><strong>现状</strong>：投诉文本里「机器人话术」是直接被用户当成贬义词在用——证明语气没分场景、没拟人化、读起来就是模板。证据：<a href="https://tousu.sina.com.cn/complaint/view/17391054916">案例 1</a> · <a href="https://tousu.sina.com.cn/complaint/view/17392261963">案例 2</a>。</p>
+        <p><strong>本质</strong>：话术运营没有按「催单 / 退款 / 骑手联络 / 投诉 / 异常」等场景做分语气包。</p>
+      </div>
+
+      <div class="gap-box">
+        <div class="gap-title">差距 2：情绪 → 动作闭环缺失 — 识别了情绪也没差异化处置</div>
+        <p><strong>对标</strong>：美团情绪识别触发安抚 or 自动转人工；阿里小蜜情绪三件套；Sierra 在敏感场景（丧亲）有 guardrails 防止幻觉。</p>
+        <p><strong>现状</strong>：「机器人只会道歉+补 5 元红包」——即使识别到负面情绪，<strong>触发动作的多样性严重不足</strong>。<a href="https://news.qq.com/rain/a/20250815A07D2Q00">腾讯新闻案例</a>里 AI 重复「非常抱歉」+5 元补偿陷入死循环；同时出现「AI 退退退」被误判退款。</p>
+        <p><strong>本质</strong>：情感识别和业务动作没解耦——应走「先安抚 → 给 ETA → 主动催骑手 → 转专员」四步动作链，而非只切一句道歉模板。</p>
+      </div>
+
+      <div class="gap-box">
+        <div class="gap-title">差距 3：节奏被动 — 只会等用户来问，不会主动推进</div>
+        <p><strong>对标</strong>：阿里小蜜「猜你想问」预测下一问、「服务管家」主动推送；Sierra agent 主动闭环；美团 Task 间调度做关联推荐。</p>
+        <p><strong>现状</strong>：投诉里反复「打不通」「联系不上」「让我自行通过 APP 联系」——机器人在用户首问后既不主动追问、不给后续状态、也不主动转人工。</p>
+        <p><strong>本质</strong>：缺少主动推进机制——(a) 首问后没主动追问；(b) 订单异常没主动推送；(c) 转人工决策权交给用户而非 bot。</p>
+      </div>
+
+      <div class="gap-box">
+        <div class="gap-title">差距 4：评测指标错位 — 只看解决率/接通率，不看拟人性/情绪转化</div>
+        <p><strong>对标</strong>：Sierra 按结果付费倒逼解决率+满意度；阿里小蜜「客服质量检测」反推出情绪 pre→post 转化率指标。</p>
+        <p><strong>现状</strong>：机器人「答非所问」但话术上仍闭环（KPI 上算「已应答」），用户感受和指标严重背离。</p>
+        <p><strong>本质</strong>：缺少拟人性度量——「你是机器人吗」触发率、用户骂人比例、负面情绪转化率、首轮真实解决率（剔除模板应付）都没作为日常监控。</p>
+      </div>
+    </section>
+
+    <!-- 四、评测 -->
+    <section id="eval">
+      <h2>四、仿真环境下的拟人性评测</h2>
+
+      <div class="note-box">
+        <strong>注</strong>：项目当前数据来自仿真环境（用户输入由脚本生成），「负面情绪转化率」这类依赖真实用户反应的指标暂时失效。仿真阶段的评测目标是<strong>"bot 输出是否符合拟人化设计规范"</strong>，等上线后再叠加情绪转化等真实反应指标。
+      </div>
+
+      <h3>4.1 LLM-as-Judge 五维打分（主力方案）</h3>
+      <p>用评判 LLM 对每条 bot 回复打分，五个维度：</p>
+      <table>
+        <thead><tr><th>维度</th><th>判断要点</th><th>输出</th></tr></thead>
+        <tbody>
+          <tr><td>自然度</td><td>这句话像真人客服会说的吗？</td><td>1-5 分</td></tr>
+          <tr><td>共情命中</td><td>用户上一句若含负面情绪，bot 有没有先共情再给方案</td><td>是 / 否</td></tr>
+          <tr><td>机器人腔检测</td><td>是否包含「非常抱歉给您带来不便」等八股套话</td><td>是 / 否</td></tr>
+          <tr><td>主动推进</td><td>该主动时（追问/推送/转人工）有没有主动</td><td>是 / 否</td></tr>
+          <tr><td>事实准确</td><td>订单状态、ETA、退款规则是否对</td><td>是 / 否</td></tr>
+        </tbody>
+      </table>
+      <p>适合大规模、可重复跑，几千通会话半天能出结果。</p>
+
+      <h3>4.2 规则检测（兜底 + 低成本）</h3>
+      <ul>
+        <li><strong>重复道歉</strong>：一通会话「非常抱歉」&gt; 2 次 → 标红（「AI 退退退」案例的核心特征）</li>
+        <li><strong>同句重复</strong>：bot 连续两轮说同一句话 → 标红</li>
+        <li><strong>共情命中</strong>：用户出现「着急」「快点」「恼火」后，bot 下一句是否包含共情词</li>
+        <li><strong>敏感词护栏</strong>：用户提「中毒」「过敏」「烫伤」等，bot 必须立即转人工（100%）</li>
+        <li><strong>句长与标点分布</strong>：句子过长、句末无标点 / 缺语气词偏离真人语料</li>
+      </ul>
+
+      <h3>4.3 真人对照指纹（差异化）</h3>
+      <p>用历史真人客服会话作为基线，统计：句长分布、语气词频次、感叹号比例、表情/emoji 使用率。<strong>bot 输出统计与真人偏离越大，越不像人</strong>。外卖客服特别合适——历史真人会话存量大、标注成本几乎为零。</p>
+
+      <h3>4.4 LLM 模拟用户（进阶，待真人数据接入后再考虑）</h3>
+      <p>把仿真用户从脚本改成 LLM 扮演，根据 bot 上一句的语气动态调整自己下一句的情绪——这样「情绪转化率」就重新有意义了。但成本高、引入新变量（评测耦合于另一个 LLM），不建议作为第一步。</p>
+
+      <h3>4.5 上线后再接的真实反应指标</h3>
+      <ul>
+        <li>「你是机器人吗」触发率（用户主动质疑身份）</li>
+        <li>负面情绪 pre→post 转化率</li>
+        <li>用户骂人/不文明用语比例</li>
+        <li>会话中断率（用户中途关闭）</li>
+        <li>平均轮次到解决</li>
+      </ul>
+
+      <h3>4.6 推荐落地组合</h3>
+      <table>
+        <thead><tr><th>阶段</th><th>方法</th><th>成本</th><th>价值</th></tr></thead>
+        <tbody>
+          <tr><td>仿真阶段 P0</td><td>LLM-as-Judge 五维</td><td>1 周搭好</td><td>强</td></tr>
+          <tr><td>仿真阶段 P0</td><td>规则检测（重复道歉 / 同句重复 / 共情命中 / 敏感词护栏）</td><td>2-3 天</td><td>强</td></tr>
+          <tr><td>仿真阶段 P1</td><td>真人对照指纹</td><td>1-2 周</td><td>中、差异化</td></tr>
+          <tr><td>上线后 P0</td><td>真实反应指标埋点</td><td>2 周</td><td>强</td></tr>
+          <tr><td>暂缓</td><td>LLM 模拟用户</td><td>1-2 月</td><td>强、待评估</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 五、改造优先级 -->
+    <section id="priority">
+      <h2>五、改造优先级表</h2>
+
+      <div class="note-box">
+        <strong>优先级判据</strong>：性价比 = 预期效果 ÷ 实施成本。<strong>P0</strong> = 1 个月内可上线，<strong>P1</strong> = 1 季度内，<strong>P2</strong> = 半年以上。「需内部核实」表示该项基于公开投诉推断现状，落地前要看京东外卖内部话术/对话日志校验。
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>优先级</th>
+            <th>改造点</th>
+            <th>对应差距</th>
+            <th>预期效果</th>
+            <th>实施成本</th>
+            <th>风险</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag p0">P0-1</span></td>
+            <td><strong>场景化语气包</strong>：催单 / 退款 / 骑手联络 / 投诉 / 异常 5 个场景各做一套话术骨架，由话术运营维护；LLM 仅做风格润色不改事实</td>
+            <td>差距 1 语气产品化</td>
+            <td>投诉「机器人话术」高频词预计下降；最易感知</td>
+            <td>低（话术工程 + 1 周配置）</td>
+            <td>低：仅文案改造，可灰度回滚</td>
+          </tr>
+          <tr>
+            <td><span class="tag p0">P0-2</span></td>
+            <td><strong>敏感场景 guardrails</strong>：食物中毒 / 过敏 / 烫伤 / 异物 / 吵架升级 等强制走「快速共情 + 立即转人工 + 订单冻结」硬规则，禁止 LLM 自由生成或自动操作</td>
+            <td>差距 2 + 差距 4</td>
+            <td>杜绝「AI 退退退」类事故；规避公关风险</td>
+            <td>低（关键词 + 规则引擎，1-2 周）</td>
+            <td>极低，反而降低存量风险</td>
+          </tr>
+          <tr>
+            <td><span class="tag p0">P0-3</span></td>
+            <td><strong>仿真阶段评测体系</strong>：LLM-as-Judge 五维 + 规则检测 + 真人对照指纹；上线后接真实反应指标</td>
+            <td>差距 4 评测错位</td>
+            <td>拟人性优化有量化抓手，作为后续所有改造的 A/B 评判</td>
+            <td>低（1-2 周）</td>
+            <td>低，纯观测</td>
+          </tr>
+          <tr>
+            <td><span class="tag p1">P1-1</span></td>
+            <td><strong>情绪 → 动作 4 步链</strong>：① 切共情话术 → ② 调订单接口提速 ETA / 催骑手 → ③ 分级补偿（不是固定 5 元）→ ④ 主动转专员</td>
+            <td>差距 2 闭环</td>
+            <td>解决「道歉 + 5 元」死循环；用户感知「系统真的在帮我」</td>
+            <td>中（情绪模型 + 动作编排 + 补偿规则审批，1 季度）</td>
+            <td>中：补偿规则需财务/风控审批，需防刷</td>
+          </tr>
+          <tr>
+            <td><span class="tag p1">P1-2</span></td>
+            <td><strong>主动节奏三件套</strong>：(a) 首问后主动追问「是不是着急？」；(b) 订单异常主动推送；(c) bot 自主决定转人工</td>
+            <td>差距 3 节奏被动</td>
+            <td>「打不通 / 联系不上」类投诉本质解决</td>
+            <td>中（推送通道 + 主动逻辑 + 人工排队联动，1 季度）</td>
+            <td>中：主动推送频次需把控防骚扰</td>
+          </tr>
+          <tr>
+            <td><span class="tag p1">P1-3</span></td>
+            <td><strong>模板 + LLM 润色 双层话术</strong>：业务方写骨架保证准确，LLM 做语气改写保证自然；配「机器人口吻评分」事后质检</td>
+            <td>差距 1 深化 + 差距 4 质检</td>
+            <td>话术不僵且不出事实差错</td>
+            <td>中（LLM 微调 + 离线评测平台，6-8 周）</td>
+            <td>中：LLM 幻觉风险，需对照事实校验</td>
+          </tr>
+          <tr>
+            <td><span class="tag p2">P2-1</span></td>
+            <td><strong>个性化人设产品化</strong>：基于用户标签（新老用户、VIP、投诉历史）切不同人设包</td>
+            <td>差距 1 + 差距 2</td>
+            <td>高价值用户感知差异化；提升留存</td>
+            <td>高（标签打通 + 多人设维护 + 权限管理）</td>
+            <td>中：标签错配带来歧视感、合规风险</td>
+          </tr>
+          <tr>
+            <td><span class="tag p2">P2-2</span></td>
+            <td><strong>情绪质检反哺人工座席</strong>：同一套情绪模型给人工座席做事后质检，「AI 检 AI、AI 检人」统一闭环</td>
+            <td>差距 4 评测 + 差距 2 对内</td>
+            <td>拟人化从对外延伸到内部质量管理</td>
+            <td>高（数据打通 + 座席系统改造 + 工会沟通）</td>
+            <td>高：涉及员工绩效，需 HR/工会沟通</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>5.1 落地路线建议（按节奏）</h3>
+      <div class="timeline">
+        <div class="stage">第 1 个月</div>
+        <div class="stage-content">P0-1 / P0-2 / P0-3 全部启动并上线。这一阶段产出"看得见的拟人化效果"+"量化的衡量手段"。</div>
+
+        <div class="stage">第 2-3 个月</div>
+        <div class="stage-content">P1 三项并行（情绪闭环 / 主动节奏 / LLM 润色），用 P0-3 的指标做 A/B。</div>
+
+        <div class="stage">第 4-6 个月</div>
+        <div class="stage-content">根据 P1 数据决定 P2 是否上马；P2-2（人工质检）建议待 P1-1 稳定后再做，避免给座席增加噪音。</div>
+      </div>
+
+      <h3>5.2 关键前置条件（需内部核实 / 对齐）</h3>
+      <div class="checklist">
+        <label><input type="checkbox"><span>话术运营团队是否有专人专岗（P0-1 / P1-3 都依赖）</span></label>
+        <label><input type="checkbox"><span>订单系统是否能给客服系统暴露「催骑手 / 提速 ETA / 冻结订单」等动作接口（P0-2 / P1-1 依赖）</span></label>
+        <label><input type="checkbox"><span>补偿规则是否能改成「分级+审批」而不是「机器人随便发券」（P1-1 依赖）</span></label>
+        <label><input type="checkbox"><span>现有埋点是否能产出「机器人 vs 人工」「每轮对话情绪极性」等明细（P0-3 依赖）</span></label>
+      </div>
+    </section>
+
+    <!-- 附录 -->
+    <section id="refs">
+      <h2>附录：信息来源</h2>
+
+      <h3>行业案例</h3>
+      <ul>
+        <li><strong>京东 JIMI / 言犀</strong>：<a href="https://ec.pconline.com.cn/836/8366322.html">pconline</a> · <a href="https://www.woshipm.com/pd/5681203.html">人人都是产品经理</a> · <a href="https://www.idctalk.com/yanxi-jd.html">IDCTalk</a> · <a href="https://www.813zy.com/news/qianyanjishu/621.html">53AI</a> · <a href="https://agispace.feishu.cn/wiki/Nncjwhe4RixLOAkhASRcq2danKf">飞书云文档</a> · <a href="https://max.book118.com/html/2023/0610/8041114022005077.shtm">京东智能机器人 PPT</a> · <a href="http://news.ikanchai.com/2017/1116/174656.shtml">砍柴网-京东首次全线接入无人客服</a></li>
+        <li><strong>美团客服</strong>：<a href="https://zhuanlan.zhihu.com/p/420221299">知乎-核心技术</a> · <a href="https://zhuanlan.zhihu.com/p/406411712">知乎-技术实践</a> · <a href="https://cloud.tencent.com/developer/article/1998601">腾讯云-解读美团</a> · <a href="https://blog.csdn.net/MeituanTech/article/details/120574272">CSDN-美团 Tech</a></li>
+        <li><strong>阿里小蜜</strong>：<a href="https://zhuanlan.zhihu.com/p/69976631">知乎-情绪回复</a> · <a href="https://blog.csdn.net/tiweeny/article/details/81475957">CSDN-技术整理</a> · <a href="https://www.ithome.com/0/383/830.htm">IT 之家-新版</a> · <a href="https://www.shangyexinzhi.com/article/4269547.html">商业新知-数字人</a> · <a href="https://max.book118.com/html/2019/0809/8071075070002041.shtm">book118-技术实践</a></li>
+        <li><strong>Intercom Fin</strong>：<a href="https://www.intercom.com/">Intercom 官网</a> · <a href="http://www.getfin.com/">Fin AI Agent</a></li>
+        <li><strong>Sierra AI</strong>：<a href="https://techcrunch.com/video/from-salesforce-co-ceo-to-sierra-bret-taylors-journey-in-tech-innovation-techcrunch-disrupt-2024/">TechCrunch Disrupt-Bret Taylor</a> · <a href="https://new.qq.com/rain/a/20250306A05T9B00">腾讯新闻-Bret Taylor 访谈</a> · <a href="https://m.sohu.com/a/867663925_122014422/">搜狐-OpenAI 主席阐述</a> · <a href="https://news.qq.com/rain/a/20250913A06DLB00">QQ-Agent 按结果付费</a></li>
+      </ul>
+
+      <h3>京东外卖现状证据（用户投诉与翻车案例）</h3>
+      <ul>
+        <li><a href="https://news.qq.com/rain/a/20250815A07D2Q00">腾讯新闻-「AI 退退退」</a></li>
+        <li><a href="https://tousu.sina.com.cn/complaint/view/17387085310">黑猫-退押金机器人独角戏</a></li>
+        <li><a href="https://tousu.sina.com.cn/complaint/view/17392261963">黑猫-骑手客服机器人</a></li>
+        <li><a href="https://tousu.sina.com.cn/complaint/view/17391458529">黑猫-客服搪塞问题</a></li>
+        <li><a href="https://tousu.sina.cn/complaint/view/17382167904">黑猫-拒不出餐模板回复</a></li>
+        <li><a href="https://tousu.sina.com.cn/complaint/view/17391054916">黑猫-淘宝闪购机器人话术</a></li>
+        <li><a href="https://tousu.sina.com.cn/complaint/view/17390364580">黑猫-食品安全</a></li>
+      </ul>
+
+      <p style="text-align:center; color:var(--muted); font-size:13px; margin-top:48px; padding-top:24px; border-top:1px solid var(--line);">
+        报告完 · 5 个行业案例 · 4 个差距诊断 · 7 项改造提案 · 由 Claude Code 整理为 HTML
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<button class="top-btn" id="topBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="回到顶部">↑</button>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('topBtn');
+    if (window.scrollY > 400) btn.classList.add('show');
+    else btn.classList.remove('show');
+  });
+</script>
+
+</body>
+</html>

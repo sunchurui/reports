@@ -4,8 +4,27 @@
     "title": "客服对话仿真系统下的长序强化学习训练",
     "date": "2026-05-31",
     "summary": "客服 RL 训练的核心瓶颈不在算法，而在仿真器和奖励模型的双重不可靠。覆盖仿真环境、长序 RL 算法、奖励建模、工业落地四方向，24 个信息源，8479 汉字。最关键发现:CSRL benchmark + CollabLLM 的 MR。",
-    "tags": ["reinforcement-learning", "customer-service", "LLM", "research"],
+    "tags": [
+      "reinforcement-learning",
+      "customer-service",
+      "LLM",
+      "research"
+    ],
     "sources": 24,
     "chars": 8479
+  },
+  {
+    "slug": "anthropomorphic-cs",
+    "title": "智能客服拟人性调研报告 · 京东外卖",
+    "date": "2026-05-31",
+    "summary": "覆盖京东 JIMI、美团、阿里小蜜、Intercom Fin、Sierra 五个行业案例，从语言/语气、情感共情、对话节奏、评测度量四维度对比；诊断京东外卖现状四大差距；给出 P0/P1/P2 改造优先级 + 落地路线。",
+    "tags": [
+      "customer-service",
+      "anthropomorphic",
+      "jd-waimai",
+      "research"
+    ],
+    "sources": 29,
+    "chars": 16000
   }
 ]
