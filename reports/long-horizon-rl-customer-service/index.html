@@ -442,44 +442,77 @@
         <strong>对你场景的实操建议</strong>：<code>user_agent.py</code> 应该提供两种模式（<code>mode="train"</code> / <code>mode="eval"</code>），分别对应不同的 sampling 参数和 agenda 强度。
       </div>
 
-      <h3>1.3 主要信息源（6 源 ✓）</h3>
+      <h3>1.3 主要信息源（核实修正后：6 真实源 + 2 撤回）</h3>
+
+      <div class="risk-box" style="margin-bottom:20px;">
+        <strong>⚠️ 勘误说明（2026-06-01）</strong>：初稿 6 个引用经事后用 <code>curl arxiv.org</code> + <code>pdftotext</code> 核实，发现 USimAgent 和 "Are LLMs All You Need TOD" 的 arXiv ID 都是 WebSearch 给的错 ID（实际指向天文学和 dense retrieval 论文），已修正为真实 ID。另外 2 个引用（DeepAI Multi-Agent Sim、ACL 2024 Findings 那个 URL）经核实无法定位到对应的真实论文 → <strong>已撤回</strong>。补充了 4 篇由 arXiv 官方 API 检索到、并下载 PDF 核实过标题的新论文（见下方带 ⭐ 的卡片）。
+      </div>
+
+      <h4>✅ 修正 / 真实保留的 4 篇旧源</h4>
 
       <div class="source-card">
         <div class="src-title"><span class="tag paper">论文</span>USimAgent: Large Language Models for Simulating Search Users</div>
-        <div class="src-meta">Zhang et al. · SIGIR 2024 · <a href="https://arxiv.org/abs/2404.09242">arXiv:2404.09242</a> · 📄 <a href="papers/USimAgent_2404.09242.pdf">本地 PDF</a></div>
-        <div class="src-note">用 LLM 模拟搜索用户的完整流程（query 生成、点击、停止），提出 Search-CoT。两种增强：改进 prompt + 知识蒸馏。<strong>对客服仿真的启示</strong>：把"用户认知过程"显式化，比让 LLM 自由发挥更稳。</div>
+        <div class="src-meta">Erhan Zhang et al. · <strong>中国人民大学高瓴 AI</strong> · SIGIR 2024 · <a href="https://arxiv.org/abs/2403.09142">arXiv:2403.09142</a>（⚠️ 修正前为 2404.09242）· 📄 <a href="papers/2403.09142_usimagent.pdf">本地 PDF</a></div>
+        <div class="src-note">用 LLM 模拟搜索用户的完整流程（query 生成、点击、停止），提出 <strong>Search-CoT</strong>——让 LLM 用户在每步行动前显式输出认知状态。<strong>对客服仿真的启示</strong>：把"用户认知过程"显式化，比让 LLM 自由发挥更稳，可类比为 Service-CoT。</div>
       </div>
 
       <div class="source-card">
         <div class="src-title"><span class="tag paper">论文</span>Inductive-Deductive Strategy Reuse for Multi-Turn Instructional Dialogues</div>
-        <div class="src-meta">Ou et al. · arXiv 2024-04 v2 · <a href="https://arxiv.org/abs/2404.11095">arXiv:2404.11095</a></div>
-        <div class="src-note">指出"两 LLM 互演"核心难点：用户模拟器无显式引导无法学到"出题策略"规则。<strong>对客服</strong>：直接对应"用户怎样把问题分轮次提出"——agenda 不能光靠 prompt 喂。</div>
+        <div class="src-meta">Jiao Ou, Jiayu Wu et al. · <strong>快手 Kuaishou</strong> · arXiv 2024-04 v2 · <a href="https://arxiv.org/abs/2404.11095">arXiv:2404.11095</a> · 📄 <a href="papers/2404.11095_inductive_deductive.pdf">本地 PDF</a> · <a href="https://github.com/kwai/IDEAS">代码 IDEAS</a></div>
+        <div class="src-note">指出"两 LLM 互演"核心难点：用户模拟器无显式引导无法学到"出题策略"。提出归纳-演绎策略复用——从真实对话归纳 instruction strategy，再演绎到新场景生成多样化指令。<strong>对客服</strong>：直接对应"用户怎样把问题分轮次提出"——agenda 不能光靠 prompt 喂，要从真实日志归纳策略库。</div>
       </div>
 
       <div class="source-card">
         <div class="src-title"><span class="tag paper">论文</span>Towards a Formal Characterization of User Simulation Objectives</div>
-        <div class="src-meta">Bernard &amp; Balog · arXiv 2024-06 · <a href="https://arxiv.org/abs/2406.19007">arXiv:2406.19007</a></div>
-        <div class="src-note">正式区分 simulator 的两类目标（训练 vs 评估），对设计选择导出相反结论。客服 RL 训练必须想清楚自己在做哪一类。</div>
-      </div>
-
-      <div class="source-card">
-        <div class="src-title"><span class="tag paper">论文</span>Simulating User Behavior in AI Systems: A Multi-Agent Approach</div>
-        <div class="src-meta">DeepAI 2025-06 · <a href="https://deepai.org/publication/simulating-user-behavior-in-ai-systems-a-multi-agent-approach-for-complex-task-scenarios">链接</a></div>
-        <div class="src-note">把模拟过程分解到多个专门 agent（意图生成、行为执行、状态跟踪等）。直接对应 <code>src/sim/agents/</code> 里 <code>user_agent / env_agent</code> 的拆法。</div>
+        <div class="src-meta">Nolwenn Bernard &amp; Krisztian Balog · <strong>University of Stavanger（挪威）</strong> · ICTIR 2024 · <a href="https://arxiv.org/abs/2406.19007">arXiv:2406.19007</a> · 📄 <a href="papers/2406.19007_user_sim_objectives.pdf">本地 PDF</a></div>
+        <div class="src-note">正式区分 simulator 的两类目标（训练 vs 评估）：训练要多样、评估要保真，导出相反结论。客服 RL 训练必须想清楚自己在做哪一类——<code>user_agent.py</code> 应提供 <code>mode="train"</code> / <code>mode="eval"</code> 两套配置。</div>
       </div>
 
       <div class="source-card">
         <div class="src-title"><span class="tag paper">论文</span>Are Large Language Models All You Need for Task-Oriented Dialogue?</div>
-        <div class="src-meta">arXiv 2023-06 · <a href="https://arxiv.org/abs/2306.03166">arXiv:2306.03166</a></div>
+        <div class="src-meta">Vojtěch Hudeček &amp; Ondřej Dušek · <strong>Charles University ÚFAL（捷克）</strong> · SIGDIAL 2023 · <a href="https://arxiv.org/abs/2304.06556">arXiv:2304.06556</a>（⚠️ 修正前为 2306.03166）· 📄 <a href="papers/2304.06556_llm_for_tod.pdf">本地 PDF</a></div>
         <div class="src-note">评估 LLM 作为 TOD user simulator 的能力。<strong>结论</strong>：LLM 显著优于传统 agenda-based ABUS，但严格遵循 agenda 约束方面仍有缺陷——客服仿真器选型必须正视的 trade-off。</div>
       </div>
 
-      <div class="source-card">
-        <div class="src-title"><span class="tag paper">论文</span>User Simulation with LLMs for Evaluating TOD</div>
-        <div class="src-meta">ACL 2024 Findings · <a href="https://aclanthology.org/2024.findings-acl.258/">aclanthology</a></div>
-        <div class="src-note">ACL 2024 正式收录，专门讨论用 LLM 当 user simulator 来做 TOD 评估的可复现性、规模化路径。</div>
+      <h4>⭐ 2026-06 补充的 4 篇真实新论文（arXiv 官方 API 检索 + PDF 标题核实）</h4>
+
+      <div class="source-card highlight">
+        <div class="src-title"><span class="tag paper">综述</span>A Survey on LLM-based Conversational User Simulation</div>
+        <div class="src-meta">Bo Ni et al. · <strong>Vanderbilt / Adobe Research / Yale</strong> · arXiv 2026-04 · <a href="https://arxiv.org/abs/2604.24977">arXiv:2604.24977</a> · 📄 <a href="papers/simulator_followup/2604.24977_survey_conversational_user_sim.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2604.24977_notes.md">中文笔记</a></div>
+        <div class="src-note">首篇系统综述 LLM 对话式用户仿真，提出 <strong>Who / What / How 三轴分类法</strong>（仿真粒度 / 交互模式 / 技术路线）。覆盖 SOTA 方法（BASES、USimAgent、CSHI、ArCHer、RAGate）、评估体系、公开 dataset。<strong>对当前任务</strong>：可作为方向地图，里面列出的 8 个相关论文都值得追。</div>
       </div>
 
+      <div class="source-card highlight">
+        <div class="src-title"><span class="tag paper">论文</span>HumanLM: Simulating Users with State Alignment Beats Response Imitation ⭐</div>
+        <div class="src-meta">Shirley Wu et al. · <strong>Stanford / NYU / Accenture</strong> · arXiv 2026-03 · <a href="https://arxiv.org/abs/2603.03303">arXiv:2603.03303</a> · 📄 <a href="papers/simulator_followup/2603.03303_humanlm.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2603.03303_notes.md">中文笔记</a></div>
+        <div class="src-note">核心论点：训练 user simulator 时，<strong>"先生成 6 维 latent state，再合成回复"</strong> 比 vanilla SFT 直接模仿回复提升 16.3%。6 维状态：belief / goal / value / stance / emotion / communication。<strong>关键负面结论</strong>：SFT 训得越多反而越差（过拟合表层模式如 emoji 频率）。<strong>对客服</strong>：直接给 <code>user_agent.py</code> 的 state 字段设计提供了心理学驱动的框架。</div>
+      </div>
+
+      <div class="source-card highlight">
+        <div class="src-title"><span class="tag paper">论文</span>Beyond Cooperative Simulators: Generating Realistic User Personas ⭐</div>
+        <div class="src-meta">Harshita Chopra et al. · arXiv 2026-05 · <a href="https://arxiv.org/abs/2605.12894">arXiv:2605.12894</a> · 📄 <a href="papers/simulator_followup/2605.12894_beyond_cooperative.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2605.12894_notes.md">中文笔记</a></div>
+        <div class="src-note">直接命中"LLM simulator 过度配合"问题。提出 <strong>Persona Policies (PPol)</strong>：通过进化搜索自动生成 behavioral axes（如 terse / skeptical / frustrated / ambiguous），每个 axis 有 active/inactive playbook。<strong>operational 指令比"扮演一个不配合的用户"有效</strong>——告诉 LLM <strong>怎么做</strong>而非<strong>是什么</strong>。盲评 human 率达 80.4%，接近真人 80.0%。<strong>对客服</strong>：persona 字段标准化设计（axis_placement + reasoning + expanded_instruction）可直接抄。</div>
+      </div>
+
+      <div class="source-card highlight">
+        <div class="src-title"><span class="tag paper">论文</span>Controllable User Simulation</div>
+        <div class="src-meta">Guy Tennenholtz et al. · <strong>Google Research + Tel Aviv University</strong> · arXiv 2026-05 · <a href="https://arxiv.org/abs/2605.11519">arXiv:2605.11519</a> · 📄 <a href="papers/simulator_followup/2605.11519_controllable_user_sim.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2605.11519_notes.md">中文笔记</a></div>
+        <div class="src-note">从因果推断视角揭示当前 user simulator 训练的两大病：<strong>look-ahead bias</strong>（post-hoc trajectory 标签泄露未来）+ <strong>controllability collapse</strong>（评估 policy 偏离训练 policy 时方差爆炸）。提出 <strong>bipartite 架构</strong>：state dynamics model（每轮更新 z_t）+ response model（基于 z_t 生成话语）解耦。<strong>对客服</strong>：直接给 <code>user_agent.py</code> 提供"agenda 栈 + LLM 表层生成"的混合架构理论依据。</div>
+      </div>
+
+      <h4>❌ 已撤回的引用（核实后无法定位真实论文）</h4>
+
+      <div class="source-card" style="opacity:0.6; border-left-color:var(--red);">
+        <div class="src-title"><span class="tag" style="background:var(--red-soft); color:var(--red);">已撤回</span>Simulating User Behavior in AI Systems: A Multi-Agent Approach</div>
+        <div class="src-meta">原 DeepAI 2025-06 链接 — 无 arXiv ID，多次重搜也无法定位真实存在的对应论文</div>
+        <div class="src-note">本卡片仅为透明记录。"多 agent 分解模拟过程"这个方法论本身合理（见 2605.11519 / 2603.03303），但不应归功于此条不存在的论文。</div>
+      </div>
+
+      <div class="source-card" style="opacity:0.6; border-left-color:var(--red);">
+        <div class="src-title"><span class="tag" style="background:var(--red-soft); color:var(--red);">已撤回</span>User Simulation with LLMs for Evaluating TOD（ACL 2024 Findings）</div>
+        <div class="src-meta">原 <a href="https://aclanthology.org/2024.findings-acl.258/">aclanthology URL</a> 经核实指向另一篇完全不相干的论文（"Evaluating the Smooth Control of Attribute Intensity..."）</div>
+        <div class="src-note">本卡片仅为透明记录。WebSearch 给的 anthology URL 也可能错链接，再次说明"任何引用必须 curl 核实"。</div>
+      </div>
       <h4>1.4 本地相关代码</h4>
       <ul>
         <li><code>src/sim/agents/cs_agent.py</code> — 客服 agent</li>
@@ -984,14 +1017,18 @@
 
     <!-- 完整参考文献 -->
     <section id="refs">
-      <h2>十一、完整参考文献清单（24 个）</h2>
+      <h2>十一、完整参考文献清单（22 真实 + 2 撤回）</h2>
       <ol>
-        <li><a href="https://arxiv.org/abs/2404.09242">USimAgent: Large Language Models for Simulating Search Users</a> — Zhang et al., SIGIR 2024 · 📄 <a href="papers/USimAgent_2404.09242.pdf">本地 PDF</a></li>
-        <li><a href="https://arxiv.org/abs/2404.11095">Inductive-Deductive Strategy Reuse for Multi-Turn Instructional Dialogues</a> — Ou et al., 2024</li>
-        <li><a href="https://arxiv.org/abs/2406.19007">Towards a Formal Characterization of User Simulation Objectives</a> — Bernard &amp; Balog, 2024</li>
-        <li><a href="https://deepai.org/publication/simulating-user-behavior-in-ai-systems-a-multi-agent-approach-for-complex-task-scenarios">Simulating User Behavior in AI Systems: A Multi-Agent Approach</a> — 2025-06</li>
-        <li><a href="https://arxiv.org/abs/2306.03166">Are Large Language Models All You Need for TOD?</a> — 2023</li>
-        <li><a href="https://aclanthology.org/2024.findings-acl.258/">User Simulation with LLMs for Evaluating TOD</a> — ACL 2024 Findings</li>
+        <li><a href="https://arxiv.org/abs/2403.09142">USimAgent: Large Language Models for Simulating Search Users</a> — Zhang et al., 人大高瓴 AI, SIGIR 2024 · 📄 <a href="papers/2403.09142_usimagent.pdf">本地 PDF</a>（⚠️ 修正前为 2404.09242）</li>
+        <li><a href="https://arxiv.org/abs/2404.11095">Inductive-Deductive Strategy Reuse for Multi-Turn Instructional Dialogues</a> — Ou et al., 快手, 2024 · 📄 <a href="papers/2404.11095_inductive_deductive.pdf">本地 PDF</a></li>
+        <li><a href="https://arxiv.org/abs/2406.19007">Towards a Formal Characterization of User Simulation Objectives</a> — Bernard &amp; Balog, Stavanger, ICTIR 2024 · 📄 <a href="papers/2406.19007_user_sim_objectives.pdf">本地 PDF</a></li>
+        <li><a href="https://arxiv.org/abs/2304.06556">Are Large Language Models All You Need for Task-Oriented Dialogue?</a> — Hudeček &amp; Dušek, Charles University, SIGDIAL 2023 · 📄 <a href="papers/2304.06556_llm_for_tod.pdf">本地 PDF</a>（⚠️ 修正前为 2306.03166）</li>
+        <li><a href="https://arxiv.org/abs/2604.24977">A Survey on LLM-based Conversational User Simulation</a> — Bo Ni et al., Vanderbilt/Adobe/Yale, 2026-04 · 📄 <a href="papers/simulator_followup/2604.24977_survey_conversational_user_sim.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2604.24977_notes.md">中文笔记</a>（2026-06 补充）</li>
+        <li><a href="https://arxiv.org/abs/2603.03303">HumanLM: Simulating Users with State Alignment Beats Response Imitation</a> ⭐ — Shirley Wu et al., Stanford/NYU/Accenture, 2026-03 · 📄 <a href="papers/simulator_followup/2603.03303_humanlm.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2603.03303_notes.md">中文笔记</a>（2026-06 补充）</li>
+        <li><a href="https://arxiv.org/abs/2605.12894">Beyond Cooperative Simulators: Generating Realistic User Personas</a> ⭐ — Harshita Chopra et al., 2026-05 · 📄 <a href="papers/simulator_followup/2605.12894_beyond_cooperative.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2605.12894_notes.md">中文笔记</a>（2026-06 补充）</li>
+        <li><a href="https://arxiv.org/abs/2605.11519">Controllable User Simulation</a> — Guy Tennenholtz et al., Google Research, 2026-05 · 📄 <a href="papers/simulator_followup/2605.11519_controllable_user_sim.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2605.11519_notes.md">中文笔记</a>（2026-06 补充）</li>
+        <li style="opacity:0.5"><s>Simulating User Behavior in AI Systems: A Multi-Agent Approach (DeepAI 2025-06)</s> — <strong>已撤回</strong>（无法定位真实论文）</li>
+        <li style="opacity:0.5"><s>User Simulation with LLMs for Evaluating TOD (ACL 2024 Findings)</s> — <strong>已撤回</strong>（aclanthology URL 指向不相干论文）</li>
         <li><a href="https://arxiv.org/abs/2508.02298">CAPO: Towards Enhancing LLM Reasoning through Generative Credit Assignment</a> — 2025-08</li>
         <li><a href="https://arxiv.org/abs/2510.00194">GRPO-λ: Credit Assignment improves LLM Reasoning</a> — 2025-09</li>
         <li><a href="http://www.paperreading.club/page?id=281295">CollabLLM: From Passive Responders to Active Collaborators</a> ⭐ — Wu et al., 2025</li>
