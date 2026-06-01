@@ -392,7 +392,7 @@
           <tr><td><strong>仿真环境</strong></td><td>LLM-driven simulator 已成主流</td><td>agenda faithfulness 仍是 LLM 模拟器短板</td></tr>
           <tr><td><strong>长序 RL 算法</strong></td><td>utterance-level RL（ArCHer）+ Multiturn-aware Rewards（CollabLLM）是 2024 关键突破</td><td>GRPO 系算法在多轮场景需要 GRPO-λ / CAPO 改造</td></tr>
           <tr><td><strong>奖励建模</strong></td><td>ORM → PRM 迁移已验证显著有效</td><td>LLM-as-judge 的 bias 在客服场景被放大</td></tr>
-          <tr><td><strong>工业落地</strong></td><td>CSRL benchmark（KDD 2025）是最契合的开源资产</td><td>行业共识：人机协同 &gt; 全自动替代</td></tr>
+          <tr><td><strong>工业落地</strong></td><td>AliMe 谱系（CIKM 2017 / KDD 2019 / SIGIR 2019）覆盖工业客服系统设计</td><td>行业共识：人机协同 &gt; 全自动替代</td></tr>
         </tbody>
       </table>
 
@@ -418,7 +418,7 @@
       <details>
         <summary>(b) 信息非对称 + 工具调用</summary>
         <div class="details-body">
-          客服 agent 比用户多看见一整套后台信息（订单状态、骑手轨迹、退款记录、历史申诉）。这意味着 simulator 需要区分"用户已知"和"环境真值"——这恰好是用户工作目录 <code>src/sim/agents/</code> 里 <code>env_agent.py</code>（环境真值 + 工具）和 <code>user_agent.py</code>（用户视角 + agenda）分离的设计依据。<strong>Multi-Agent 仿真</strong>（<a href="https://deepai.org/publication/simulating-user-behavior-in-ai-systems-a-multi-agent-approach-for-complex-task-scenarios">DeepAI 2025-06</a>）正是这种思路的学术形式化。
+          客服 agent 比用户多看见一整套后台信息（订单状态、骑手轨迹、退款记录、历史申诉）。这意味着 simulator 需要区分"用户已知"和"环境真值"——这恰好是用户工作目录 <code>src/sim/agents/</code> 里 <code>env_agent.py</code>（环境真值 + 工具）和 <code>user_agent.py</code>（用户视角 + agenda）分离的设计依据。<strong>Multi-Agent 仿真</strong>正是这种思路的学术形式化（参见 1.3 节列出的真实文献）。
         </div>
       </details>
 
@@ -592,8 +592,8 @@
       </div>
 
       <div class="source-card">
-        <div class="src-title"><span class="tag paper">论文</span>DoctorAgent-RL: Multi-Agent Collaborative RL for Multi-Turn Clinical Dialogue</div>
-        <div class="src-meta">Feng et al. · arXiv 2505.19630 · 2025-05 · <a href="https://arxiv.org/abs/2505.19630">arXiv</a></div>
+        <div class="src-title"><span class="tag paper">论文</span>Real-World Doctor Agent with Proactive Consultation through Multi-Agent Reinforcement Learning</div>
+        <div class="src-meta">Feng et al. · arXiv 2505.19630 · 2025-05 · <a href="https://arxiv.org/abs/2505.19630">arXiv:2505.19630</a> · 📄 <a href="papers/2505.19630_doctoragent_rl.pdf">本地 PDF</a></div>
         <div class="src-note">多 agent 协作 RL 用于多轮医疗问诊。跨域迁移性强——客服同样需要"主动追问 + 多轮信息聚合"。</div>
       </div>
     </section>
@@ -674,11 +674,6 @@
         <div class="src-note">多 agent 辩论式评估框架，三种沟通策略（One-By-One / Simultaneous / Summarized）。</div>
       </div>
 
-      <div class="source-card">
-        <div class="src-title"><span class="tag paper">论文</span>SimQA: Detecting Hallucinations in Conversational QA through Simulated Dialogues</div>
-        <div class="src-meta">Hristov et al. · arXiv 2502.17938 · 2025-02 · <a href="https://arxiv.org/abs/2502.17938">arXiv</a></div>
-        <div class="src-note">用模拟对话<strong>主动探测</strong>主模型在多轮中的幻觉。<strong>启示</strong>：可以反过来用 simulator 当 reward 信号——同一个事实在多轮被反问时是否一致。</div>
-      </div>
 
       <div class="source-card">
         <div class="src-title"><span class="tag paper">综述</span>A Survey on Recent Advances in LLM-Based Multi-turn Dialogue Systems</div>
@@ -720,31 +715,12 @@
               <tr><td>2019</td><td>KDD</td><td>AliMe Dialogue</td><td>多模态 + 实时人机协同</td></tr>
               <tr><td>2019</td><td>SIGIR</td><td>RL + GCN-Q-network 推荐</td><td>RL 首次成为主线</td></tr>
               <tr><td>2020</td><td>CIKM</td><td>AliMe KG</td><td>结构化知识在工业系统不可替代</td></tr>
-              <tr><td>2025</td><td>arXiv</td><td><strong>CSRL benchmark</strong></td><td>客服 RL 的工业完全体 ⭐</td></tr>
             </tbody>
           </table>
         </div>
       </details>
 
-      <h3>4.3 CSRL 是当下最值得拆解的工业资产</h3>
-      <div class="opp-box">
-        <strong>CSRL 同时给了</strong>：环境（脱敏真实客服数据）+ 算法库（offline RL）+ 评估协议（offline metrics + online simulation）<br>
-        <strong>对你场景的具体借鉴点</strong>：
-        <ul>
-          <li>offline + online simulation 双评估模式，可直接复用为 <code>src/sim/</code> 的评估协议</li>
-          <li>任务三分（QA、意图理解、对话策略）对应实际客服能力分解</li>
-          <li>开源协议允许学习其数据 schema 设计</li>
-        </ul>
-        GitHub：<a href="https://github.com/Alibaba-NLP/CSRL">Alibaba-NLP/CSRL</a>
-      </div>
-
       <h3>4.4 主要信息源（5 源 ✓）</h3>
-
-      <div class="source-card highlight">
-        <div class="src-title"><span class="tag bench">基准</span><span class="tag code">代码</span><span class="tag industry">工业</span>CSRL: A Customer Service Reinforcement Learning Benchmark ⭐</div>
-        <div class="src-meta">Alibaba-NLP · arXiv 2502.10911 · 2025-02 · <a href="https://arxiv.org/abs/2502.10911">论文</a> · <a href="https://github.com/Alibaba-NLP/CSRL">代码</a></div>
-        <div class="src-note">阿里 NLP 团队基于电商客服匿名数据构建的 RL benchmark。<strong>最契合本调研主题的工作</strong>，几乎是用户问题的工业版完全体。</div>
-      </div>
 
       <div class="source-card">
         <div class="src-title"><span class="tag paper">论文</span><span class="tag industry">工业</span>AliMe Dialogue: Helping Customer Service Agents via Real-Time Multi-Modal Dialogue Management</div>
@@ -803,14 +779,14 @@
       </div>
 
       <div class="opp-box">
-        <strong>判断</strong>：如果只能优先做一件事，<strong>先把仿真器和奖励对齐到工业可接受水平，再开 RL</strong>。CSRL 的设计就是这个顺序：先固化数据 schema 和 evaluation，再上 offline RL 算法。
+        <strong>判断</strong>：如果只能优先做一件事，<strong>先把仿真器和奖励对齐到工业可接受水平，再开 RL</strong>。
       </div>
 
       <h3>5.2 方向间的"互相校验"机会</h3>
       <ul>
-        <li><strong>仿真器 × 奖励模型</strong>：用 SimQA 反向探测思路，让 simulator 故意制造矛盾问题，看 reward model 能否识别 policy 的不一致回复——一举测出两者的弱点。</li>
+        <li><strong>仿真器 × 奖励模型</strong>：可以让 simulator 故意制造矛盾问题，看 reward model 能否识别 policy 的不一致回复——一举测出两者的弱点。</li>
         <li><strong>长序 RL × 奖励模型</strong>：CollabLLM 的 MR 本身就是 reward × algorithm 的联合设计——避免单独优化 reward 后被 algorithm 放大偏差。</li>
-        <li><strong>工业案例 × 仿真器</strong>：CSRL 同时给了真实数据 + simulation——把"真实日志做 offline RL"和"simulator 做 online evaluation"绑在一起，避免纯 sim2real 的距离问题。</li>
+        <li><strong>工业案例 × 仿真器</strong>：AliMe 谱系反复证明"实时辅助 + 真实日志"是工业可行路径——避免纯 sim2real 的距离问题。</li>
       </ul>
 
       <h3>5.3 一个常被忽视的耦合：reward 维度 ↔ simulator persona</h3>
@@ -845,7 +821,7 @@
           <tr><td>合规边界 <strong>(hard)</strong></td><td>规则系统（敏感词 + 合规清单）</td><td>每轮</td></tr>
           <tr><td>长期贡献</td><td>CollabLLM 风格 MR</td><td>每轮</td></tr>
           <tr><td>终态结果</td><td>人工标注 / 离线规则判断</td><td>会话末</td></tr>
-          <tr><td>一致性</td><td>SimQA 风格反问探测</td><td>会话末</td></tr>
+          <tr><td>一致性</td><td>多轮反问探测</td><td>会话末</td></tr>
         </tbody>
       </table>
       <p>聚合时<strong>不要单纯求和</strong>——hard constraint 走 reject sampling，其余走加权（建议先 PRM 风格分别打分，再训一个 small head 聚合）。</p>
@@ -898,7 +874,7 @@
         <li><strong>仿真器与真人的分布差距如何量化？</strong> 现在的 evaluation 多用 task success rate 间接衡量——但无法区分"仿真器 too easy" vs "policy too good"。需要一个 simulator-agnostic 的分布距离指标。</li>
         <li><strong>跨域迁移</strong>：餐饮客服训的 policy 能否 zero-shot 到 3C 客服？目前 RL 算法都假设 stationary distribution，跨域几乎一定退化。</li>
         <li><strong>真人偏好 vs sim 偏好</strong>：用 LLM-as-judge 拿 process reward 数据训 PRM，再用 PRM 训 policy——这条链路上 judge 的 bias 会被 RL 放大成多少？还没有公开 ablation。</li>
-        <li><strong>会话长度与训练成本的权衡</strong>：长会话 rollout 成本极高——offline RL（CSRL 路线）和 on-policy 的平衡点在哪？</li>
+        <li><strong>会话长度与训练成本的权衡</strong>：长会话 rollout 成本极高——offline RL 和 on-policy 的平衡点在哪？</li>
       </ol>
     </section>
 
@@ -920,14 +896,13 @@
           <tr><td><strong>MTPO</strong> (Shani 2024)</td><td>utterance / trajectory</td><td>末态 trajectory 偏好（无需 reward）</td><td>否（直接学偏好）</td><td>强</td><td>中-高（需多轮偏好标注）</td><td>客服多轮主线（推荐）</td></tr>
           <tr style="background:var(--accent-soft);"><td><strong>CollabLLM (MR)</strong></td><td>utterance</td><td>协作模拟整段对话取均值 (MC rollout)</td><td>可选</td><td>强</td><td>中</td><td><strong>客服长序优化</strong> ⭐</td></tr>
           <tr><td>ArCHer</td><td>utterance + token</td><td>分层 advantage</td><td>高层需要</td><td>强</td><td>中</td><td>长尾任务规划</td></tr>
-          <tr><td>DoctorAgent-RL</td><td>utterance</td><td>多 agent 协作</td><td>—</td><td>强</td><td>中</td><td>复杂诊断对话</td></tr>
-          <tr style="background:var(--green-soft);"><td><strong>CSRL offline RL</strong></td><td>utterance</td><td>offline 估计</td><td>—</td><td>强（基准）</td><td>极高</td><td><strong>工业冷启动 + 评估</strong> ⭐</td></tr>
+          <tr><td>Real-World Doctor Agent (Feng et al.)</td><td>utterance</td><td>多 agent 协作</td><td>—</td><td>强</td><td>中（医疗专用）</td><td>复杂诊断对话</td></tr>
         </tbody>
       </table>
 
       <h4>速读结论</h4>
       <ul>
-        <li>想最快出活 → <strong>CSRL 的 offline RL 算法库</strong> + 自己的真实日志</li>
+        <li>想最快出活 → <strong>用历史日志做 offline RL</strong>（参考 AliMe 系列工程经验）</li>
         <li>想真做长视野 → <strong>MTPO（多轮偏好）+ CollabLLM 风格 MR</strong> 是主战场——前者用真人偏好定方向，后者用 simulator 进一步精修</li>
         <li>想榨干 token-level → 再上 <strong>GRPO-λ / CAPO</strong> 或 <strong>ArCHer</strong></li>
         <li>高合规要求场景 → 把 hard constraint 放在 reject sampling 而非 reward shaping</li>
@@ -944,7 +919,7 @@
         <label><input type="checkbox"><span>收集 1 万-10 万条真实客服会话日志，按"已解决/未解决/转人工/差评"四类标注终态</span></label>
         <label><input type="checkbox"><span>抽取出至少 50 种典型 user persona（订单状态 × 用户情绪 × 诉求类型的笛卡尔积）</span></label>
         <label><input type="checkbox"><span>用 <code>user_agent.py</code> 实现 mode="train" 与 mode="eval" 两套配置</span></label>
-        <label><input type="checkbox"><span>用 SimQA 思路构造"一致性测试集"——多轮反问同一信息</span></label>
+        <label><input type="checkbox"><span>构造"一致性测试集"——多轮反问同一信息看模型能否保持口径</span></label>
         <label><input type="checkbox"><span>把 <code>env_agent.py</code> 的工具调用真值与对话状态做强解耦</span></label>
       </div>
 
@@ -967,7 +942,7 @@
 
       <div class="checklist">
         <h4>9.4 评估与上线</h4>
-        <label><input type="checkbox"><span>离线指标：CSRL benchmark 标准 metric + 自有业务指标</span></label>
+        <label><input type="checkbox"><span>离线指标：自有业务指标（FCR、CSAT、转人工率、合规违规率）</span></label>
         <label><input type="checkbox"><span>在线灰度：从 1% 真人流量开始，每周扩量看长尾投诉率</span></label>
         <label><input type="checkbox"><span>合规红队：上线前安排独立团队做合规专项攻击</span></label>
         <label><input type="checkbox"><span>人机协同兜底：保留"一键转人工"和"AI 辅助坐席"两条降级路径</span></label>
@@ -1014,16 +989,14 @@
         <li><a href="https://arxiv.org/abs/2508.02298">CAPO: Towards Enhancing LLM Reasoning through Generative Credit Assignment</a> — 2025-08</li>
         <li><a href="https://arxiv.org/abs/2510.00194">GRPO-λ: Credit Assignment improves LLM Reasoning</a> — 2025-09</li>
         <li><a href="https://arxiv.org/abs/2502.00640">CollabLLM: From Passive Responders to Active Collaborators</a> ⭐ — Wu, Galley, Peng, Cheng, Gao et al., Stanford + Microsoft Research, arXiv 2025-02 · 📄 <a href="papers/simulator_followup/2502.00640_collabllm.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2502.00640_notes.md">中文笔记</a></li>
-        <li><a href="https://arxiv.org/abs/2505.19630">DoctorAgent-RL: Multi-Agent Collaborative RL</a> — Feng et al., 2025</li>
+        <li><a href="https://arxiv.org/abs/2505.19630">Real-World Doctor Agent with Proactive Consultation through Multi-Agent RL</a> — Feng et al., arXiv 2505.19630, 2025-05 · 📄 <a href="papers/2505.19630_doctoragent_rl.pdf">本地 PDF</a></li>
         <li><a href="https://arxiv.org/abs/2402.19446">ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL</a> — Zhou et al., 2024（<a href="https://yifeizhou02.github.io/archer.github.io/">项目主页</a>）</li>
         <li><a href="https://arxiv.org/abs/2405.14655">Multi-turn Reinforcement Learning from Preference Human Feedback (MTPO)</a> ⭐ — Lior Shani, Aviv Rosenberg, Asaf Cassel et al., Google Research + DeepMind + Tel Aviv University, NeurIPS 2024 · 📄 <a href="papers/2405.14655_multi_turn_rlhf.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2405.14655_notes.md">中文笔记</a></li>
         <li><a href="https://arxiv.org/abs/2402.14762">MT-Bench-101</a> — ACL 2024</li>
         <li><a href="https://m.blog.csdn.net/qq_40206371/article/details/137228712">ChatEval</a> — ICLR 2024</li>
         <li><a href="https://arxiv.org/abs/2402.18013">A Survey on LLM-Based Multi-turn Dialogue Systems</a> — Yi et al., 2024-2025</li>
-        <li><a href="https://arxiv.org/abs/2502.17938">SimQA: Detecting Hallucinations in Conversational QA</a> — 2025</li>
         <li><a href="https://arxiv.org/abs/2305.20050">Let's Verify Step by Step (PRM800K)</a> — OpenAI, 2023（<a href="https://github.com/openai/prm800k">代码</a>）</li>
         <li><a href="https://arxiv.org/abs/2501.03124">PRMBench</a> — 2025</li>
-        <li><a href="https://arxiv.org/abs/2502.10911">CSRL: A Customer Service Reinforcement Learning Benchmark</a> ⭐ — Alibaba-NLP, 2025（<a href="https://github.com/Alibaba-NLP/CSRL">代码</a>）</li>
         <li><a href="https://blog.csdn.net/weixin_44244190/article/details/103099587">AliMe Dialogue (KDD 2019) + AliMe SIGIR 2019 谱系</a></li>
         <li><a href="https://arxiv.org/abs/1801.05032">AliMe Assist</a> — CIKM 2017</li>
         <li><a href="https://www.sciencedirect.com/science/article/pii/S0950705124008505">Dialogue policy optimization in customer service with RL</a> — KBS, 2024</li>
@@ -1037,7 +1010,7 @@
       <p>把 24 个信息源和七节分析浓缩成"如果只有 5 分钟读完，请记住这些"：</p>
       <ol>
         <li><strong>客服 RL 的瓶颈不是算法</strong>——CollabLLM、ArCHer、GRPO-λ 都很好，但偏差更多来自仿真器和奖励模型。</li>
-        <li><strong>CSRL benchmark 是最值得拆解的工业资产</strong>——强烈建议拉源码对照 <code>src/sim/</code> 学习其数据 schema 和评估协议。</li>
+        <li><strong>AliMe 系列（CIKM 2017 / KDD 2019 / SIGIR 2019）是公开论文最完整的工业客服谱系</strong>——可以从中吸取数据 schema 和"实时辅助 + 真实日志"的设计哲学。</li>
         <li><strong><code>user_agent.py</code> 应该做双模式</strong>——训练用 simulator 要多样，评估用 simulator 要忠实。</li>
         <li><strong>reward 至少切五维</strong>——信息准确、合规边界、长期贡献、终态结果、一致性。合规走 hard constraint。</li>
         <li><strong>训练分四阶段</strong>——SFT → DPO → <strong>MTPO 多轮偏好</strong>（用历史对话两两对比标注）→ MR-augmented RL。每阶段做 ablation，不要跳级。</li>
