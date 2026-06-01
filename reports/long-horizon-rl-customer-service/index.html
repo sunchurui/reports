@@ -510,7 +510,7 @@
         <thead><tr><th>Horizon</th><th>长度</th><th>优化目标</th><th>代表方法</th></tr></thead>
         <tbody>
           <tr><td>token-level</td><td>数十到数百 token / 轮</td><td>文本流畅、对齐</td><td>标准 PPO / DPO</td></tr>
-          <tr><td>utterance-level</td><td>5-30 轮</td><td>任务完成、信息收集</td><td>ArCHer 高层策略、Multi-turn RLHF</td></tr>
+          <tr><td>utterance-level</td><td>5-30 轮</td><td>任务完成、信息收集</td><td>ArCHer 分层策略、MTPO 末态偏好</td></tr>
           <tr><td>session-level</td><td>一次会话整体</td><td>用户满意度、是否转人工</td><td>CollabLLM 的 MR</td></tr>
         </tbody>
       </table>
@@ -548,7 +548,7 @@
         <thead><tr><th>阶段</th><th>推荐方法</th><th>理由</th></tr></thead>
         <tbody>
           <tr><td>冷启动</td><td>SFT + DPO</td><td>用真人客服日志做单轮对齐，门槛低</td></tr>
-          <tr><td>多轮初步</td><td>Multi-turn RLHF（<a href="https://arxiv.org/abs/2405.14655">Shani et al. DeepMind</a>）</td><td>把 preference 数据从单轮扩到多轮</td></tr>
+          <tr><td>多轮初步</td><td><strong>MTPO</strong>（<a href="https://arxiv.org/abs/2405.14655">Shani et al., NeurIPS 2024</a>）</td><td>真人对比两段完整对话标偏好；Nash 均衡 + mirror descent；不需要 reward 函数也不需要 user simulator——客服 supervisor 本来就在做的事</td></tr>
           <tr><td>长视野优化</td><td>CollabLLM 风格 MR + ArCHer 风格分层</td><td>解决 next-turn 短视和 token/utterance 双层抽象</td></tr>
           <tr><td>Token-level 精修</td><td>GRPO-λ 或 CAPO 替换 GRPO</td><td>必要时再上</td></tr>
         </tbody>
@@ -568,10 +568,15 @@
         <div class="src-note">分层 RL：高层 utterance 级选子目标，低层 token 级策略改进。21 个环境验证。</div>
       </div>
 
-      <div class="source-card">
-        <div class="src-title"><span class="tag paper">论文</span>Multi-turn Reinforcement Learning from Preference Human Feedback</div>
-        <div class="src-meta">Shani et al. · Google DeepMind · arXiv 2405.14655 · <a href="https://arxiv.org/abs/2405.14655">arXiv</a></div>
-        <div class="src-note">指出标准 RLHF 只优化 next response，对多轮规划任务不合适。提出 multi-turn RLHF 形式化与算法。</div>
+      <div class="source-card highlight">
+        <div class="src-title"><span class="tag paper">论文</span>Multi-turn Reinforcement Learning from Preference Human Feedback (MTPO) ⭐</div>
+        <div class="src-meta">Lior Shani, Aviv Rosenberg, Asaf Cassel et al. · <strong>Google Research + DeepMind + Tel Aviv University</strong> · NeurIPS 2024 · <a href="https://arxiv.org/abs/2405.14655">arXiv:2405.14655</a> · 📄 <a href="papers/2405.14655_multi_turn_rlhf.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2405.14655_notes.md">中文笔记</a></div>
+        <div class="src-note">
+          <strong>核心洞察</strong>：标准 RLHF 把多轮硬拆成单轮逐轮标注偏好，会引入破坏性偏差——因为一个动作的好坏取决于后续怎么发展。论文原话举的例子：「直接回答 vs 反问澄清」哪个好，<strong>标注员在不看后续对话的情况下根本判断不了</strong>。<br>
+          <strong>方法 (MTPO)</strong>：建模为 Contextual MDP；偏好只在<strong>末态</strong>（两条完整对话之间）给；不假设 Bradley-Terry / 不假设有 reward；优化目标改成<strong>找 Nash 均衡的策略</strong>。算法层面把 Nash-MD（Munos 2023）扩到多轮，用 mirror descent + KL 正则。关键引理把 trajectory-level KL 分解为各 turn KL 之和，让计算可解。<strong>有 O(1/T) 收敛保证</strong>。<br>
+          <strong>实验</strong>：在专门为多轮搭的 Education Dialogue 环境（已开源）上显著优于单轮 RLHF；在有 reward 的 Car Dealer 环境上，<strong>只用偏好信号能匹敌 reward-based PPO</strong>。<br>
+          <strong>对客服 RL 的意义</strong>：可借鉴度比 CollabLLM 更高——客服没有客观 task reward（MTPO 不需要）、客服 supervisor 本来就在做"对比两段对话"的工作（MTPO 直接复用）、客服 user simulator 难做真（MTPO 不需要 simulator）。它的设计动机里"该不该反问澄清"的例子就是客服催单/退款的字面情况。
+        </div>
       </div>
 
       <div class="source-card">
@@ -912,7 +917,7 @@
           <tr><td>GRPO</td><td>token</td><td>组内 baseline</td><td>不需要</td><td>弱</td><td>高</td><td>推理任务</td></tr>
           <tr><td>GRPO-λ</td><td>token</td><td>TD(λ) 风格</td><td>不需要</td><td>中</td><td>中</td><td>推理 + 多轮过渡</td></tr>
           <tr><td>CAPO</td><td>token</td><td>生成式信用分配</td><td>不需要</td><td>中</td><td>中</td><td>推理 + 多轮过渡</td></tr>
-          <tr><td>Multi-turn RLHF</td><td>utterance</td><td>偏好 + 多轮 RM</td><td>可选</td><td>强</td><td>中</td><td>多轮主线</td></tr>
+          <tr><td><strong>MTPO</strong> (Shani 2024)</td><td>utterance / trajectory</td><td>末态 trajectory 偏好（无需 reward）</td><td>否（直接学偏好）</td><td>强</td><td>中-高（需多轮偏好标注）</td><td>客服多轮主线（推荐）</td></tr>
           <tr style="background:var(--accent-soft);"><td><strong>CollabLLM (MR)</strong></td><td>utterance</td><td>协作模拟整段对话取均值 (MC rollout)</td><td>可选</td><td>强</td><td>中</td><td><strong>客服长序优化</strong> ⭐</td></tr>
           <tr><td>ArCHer</td><td>utterance + token</td><td>分层 advantage</td><td>高层需要</td><td>强</td><td>中</td><td>长尾任务规划</td></tr>
           <tr><td>DoctorAgent-RL</td><td>utterance</td><td>多 agent 协作</td><td>—</td><td>强</td><td>中</td><td>复杂诊断对话</td></tr>
@@ -923,7 +928,7 @@
       <h4>速读结论</h4>
       <ul>
         <li>想最快出活 → <strong>CSRL 的 offline RL 算法库</strong> + 自己的真实日志</li>
-        <li>想真做长视野 → <strong>CollabLLM 风格 MR + Multi-turn RLHF</strong> 是主战场</li>
+        <li>想真做长视野 → <strong>MTPO（多轮偏好）+ CollabLLM 风格 MR</strong> 是主战场——前者用真人偏好定方向，后者用 simulator 进一步精修</li>
         <li>想榨干 token-level → 再上 <strong>GRPO-λ / CAPO</strong> 或 <strong>ArCHer</strong></li>
         <li>高合规要求场景 → 把 hard constraint 放在 reject sampling 而非 reward shaping</li>
       </ul>
@@ -1011,7 +1016,7 @@
         <li><a href="https://arxiv.org/abs/2502.00640">CollabLLM: From Passive Responders to Active Collaborators</a> ⭐ — Wu, Galley, Peng, Cheng, Gao et al., Stanford + Microsoft Research, arXiv 2025-02 · 📄 <a href="papers/simulator_followup/2502.00640_collabllm.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2502.00640_notes.md">中文笔记</a></li>
         <li><a href="https://arxiv.org/abs/2505.19630">DoctorAgent-RL: Multi-Agent Collaborative RL</a> — Feng et al., 2025</li>
         <li><a href="https://arxiv.org/abs/2402.19446">ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL</a> — Zhou et al., 2024（<a href="https://yifeizhou02.github.io/archer.github.io/">项目主页</a>）</li>
-        <li><a href="https://arxiv.org/abs/2405.14655">Multi-turn Reinforcement Learning from Preference Human Feedback</a> — Shani et al., DeepMind, 2024</li>
+        <li><a href="https://arxiv.org/abs/2405.14655">Multi-turn Reinforcement Learning from Preference Human Feedback (MTPO)</a> ⭐ — Lior Shani, Aviv Rosenberg, Asaf Cassel et al., Google Research + DeepMind + Tel Aviv University, NeurIPS 2024 · 📄 <a href="papers/2405.14655_multi_turn_rlhf.pdf">本地 PDF</a> · 📝 <a href="papers/simulator_followup/2405.14655_notes.md">中文笔记</a></li>
         <li><a href="https://arxiv.org/abs/2402.14762">MT-Bench-101</a> — ACL 2024</li>
         <li><a href="https://m.blog.csdn.net/qq_40206371/article/details/137228712">ChatEval</a> — ICLR 2024</li>
         <li><a href="https://arxiv.org/abs/2402.18013">A Survey on LLM-Based Multi-turn Dialogue Systems</a> — Yi et al., 2024-2025</li>
@@ -1035,7 +1040,7 @@
         <li><strong>CSRL benchmark 是最值得拆解的工业资产</strong>——强烈建议拉源码对照 <code>src/sim/</code> 学习其数据 schema 和评估协议。</li>
         <li><strong><code>user_agent.py</code> 应该做双模式</strong>——训练用 simulator 要多样，评估用 simulator 要忠实。</li>
         <li><strong>reward 至少切五维</strong>——信息准确、合规边界、长期贡献、终态结果、一致性。合规走 hard constraint。</li>
-        <li><strong>训练分四阶段</strong>——SFT → DPO → Multi-turn RLHF → MR-augmented RL。每阶段做 ablation，不要跳级。</li>
+        <li><strong>训练分四阶段</strong>——SFT → DPO → <strong>MTPO 多轮偏好</strong>（用历史对话两两对比标注）→ MR-augmented RL。每阶段做 ablation，不要跳级。</li>
         <li><strong>CollabLLM 的 MR 是当前最贴近客服需求的长序方法</strong>——通过 Monte Carlo rollout 用 LLM 模拟用户继续聊 w 轮，用整段对话质量评价当前回复，绕开 next-turn 奖励的短视。但论文未在客服域验证，task reward 和 user simulator 都需要重新设计。</li>
         <li><strong>工业默认形态是"AI 辅助坐席"而非"AI 替代坐席"</strong>——AliMe Dialogue (KDD 2019) 已验证。</li>
         <li><strong>关注 reward hacking 的客服版本</strong>：礼貌但不解决、过度承诺、推诿、信息编造、敷衍安抚。</li>
