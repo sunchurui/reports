@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>多轮对话强化学习调研报告（速览）</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --panel: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --line: #e5e3dc;
+    --accent: #b5651d;
+    --accent-soft: #fff4e6;
+    --green: #2d7a4f;
+    --green-soft: #e8f5ed;
+    --red: #b03030;
+    --red-soft: #fdecec;
+    --blue: #2960a8;
+    --blue-soft: #e7f0fa;
+    --yellow: #b88600;
+    --yellow-soft: #fff8d6;
+    --purple: #6b4099;
+    --purple-soft: #f1ebf7;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 0;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  nav.toc {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    padding: 28px 20px;
+    font-size: 13px;
+  }
+  nav.toc h3 {
+    margin: 0 0 12px 0;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 6px 0; }
+  nav.toc a {
+    color: var(--ink);
+    text-decoration: none;
+    display: block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+  nav.toc a:hover {
+    background: var(--accent-soft);
+    border-left-color: var(--accent);
+    color: var(--accent);
+  }
+  main { padding: 48px 56px; }
+  header.report-head {
+    margin-bottom: 36px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--accent);
+  }
+  header.report-head h1 {
+    font-size: 26px;
+    margin: 0 0 10px 0;
+    line-height: 1.3;
+  }
+  header.report-head .meta {
+    font-size: 13px;
+    color: var(--muted);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .stats {
+    display: flex;
+    gap: 14px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .stats .stat {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .stats .stat.verified { background: var(--green-soft); color: var(--green); }
+  h2 {
+    font-size: 22px;
+    margin: 36px 0 18px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    scroll-margin-top: 20px;
+  }
+  h3 {
+    font-size: 17px;
+    margin: 22px 0 10px 0;
+  }
+  h4 {
+    font-size: 15px;
+    margin: 16px 0 8px 0;
+  }
+  p { margin: 12px 0; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  a:hover { background: var(--accent-soft); }
+  strong { color: #000; font-weight: 600; }
+  em { font-style: italic; }
+  code {
+    font-family: "SF Mono", Monaco, Consolas, monospace;
+    background: #f0ede4;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.88em;
+    color: #553311;
+  }
+  blockquote {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    margin: 16px 0;
+    padding: 12px 16px;
+    color: #4a3a20;
+    border-radius: 0 4px 4px 0;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 14px;
+    background: var(--panel);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th { background: #f5f2e9; font-weight: 600; font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fcfaf3; }
+
+  /* 信息源卡片 */
+  .source-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--blue);
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 12px 0;
+  }
+  .source-card .src-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 15px;
+  }
+  .source-card .src-meta {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  .source-card .src-note { font-size: 14px; }
+  .source-card.algo { border-left-color: var(--blue); }
+  .source-card.eval { border-left-color: var(--purple); }
+  .source-card.foundation { border-left-color: var(--accent); }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .tag.paper { background: var(--blue-soft); color: var(--blue); }
+  .tag.survey { background: var(--green-soft); color: var(--green); }
+  .tag.bench { background: var(--yellow-soft); color: var(--yellow); }
+
+  .risk-box {
+    background: var(--red-soft);
+    border-left: 3px solid var(--red);
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    margin: 14px 0;
+  }
+
+  .top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    font-size: 20px;
+    display: none;
+    z-index: 100;
+  }
+  .top-btn.show { display: block; }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px; }
+  }
+  @media print {
+    nav.toc, .top-btn { display: none; }
+    .layout { display: block; }
+    main { padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <nav class="toc">
+    <h3>目录</h3>
+    <ol>
+      <li><a href="#abstract">摘要</a></li>
+      <li><a href="#algo">一、算法层</a></li>
+      <li><a href="#eval">二、评估层</a></li>
+      <li><a href="#cross">三、跨方向交叉判断</a></li>
+      <li><a href="#open">四、最重的开放问题</a></li>
+      <li><a href="#advice">五、对客服的具体建议</a></li>
+      <li><a href="#refs">参考文献</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <header class="report-head" id="top">
+      <h1>多轮对话强化学习调研报告（速览）</h1>
+      <div class="meta">
+        <span>调研日期：2026-06-01</span>
+        <span>范围：算法层 + 评估层</span>
+        <span>深度：速览版</span>
+      </div>
+      <div class="stats">
+        <span class="stat">11 个 arXiv 源</span>
+        <span class="stat verified">全部 verify_arxiv 通过</span>
+        <span class="stat">算法层 6 篇</span>
+        <span class="stat">评估层 5 篇</span>
+      </div>
+    </header>
+
+    <!-- 摘要 -->
+    <section id="abstract">
+      <h2>摘要</h2>
+      <p>多轮对话 RL 相比单轮 RLHF，本质是把「如何归因到中间轮次」这个问题做对。本调研从 11 篇核实过的 arXiv 论文里抽取算法层和评估层两条主线。</p>
+
+      <h4>核心结论</h4>
+      <ul>
+        <li><strong>算法层</strong>已经有清晰的演进路径：<strong>token-level 改造（CAPO、GRPO-λ）→ utterance-level 抽象（ArCHer）→ trajectory 偏好（MTPO）→ 模拟回报（CollabLLM）→ 多 agent 协作（DoctorAgent-RL）</strong>。</li>
+        <li><strong>评估层</strong>的核心矛盾是<strong>真实性 vs 可扩展性</strong>：人工评估贵、LLM-as-judge 便宜但有 bias、user simulator 中间路线但 sim2real gap 大。MT-Bench 已经是 LLM-as-judge 的事实标准。</li>
+        <li><strong>最重要的开放问题</strong>：评估层比算法层成熟度低一个量级。评估器自己的 bias 没解决之前，算法层的所有数字都打折扣。</li>
+      </ul>
+    </section>
+
+    <!-- 算法层 -->
+    <section id="algo">
+      <h2>一、算法层：多轮对话 RL 的方法演进</h2>
+
+      <h3>1.1 单轮 RLHF 在多轮上的失效模式</h3>
+      <p>主流 RLHF（PPO/DPO）默认是 <strong>single-turn contextual bandit</strong>：给一个 prompt → 模型出一个 response → 拿一个偏好。这套范式在多轮对话上有三个失效模式：</p>
+      <ol>
+        <li><strong>Next-turn 短视</strong>：只优化当前回复用户立刻的反应，看不到「主动追问能省 5 轮返工」。</li>
+        <li><strong>Credit assignment 难题</strong>：reward 通常只在末态给（用户满意 / 不满意），跨多轮归因难。</li>
+        <li><strong>Token vs utterance 抽象错位</strong>：标准 RL 在 token 级跑，但对话决策是 utterance 级的。</li>
+      </ol>
+
+      <h3>1.2 主流方法谱系</h3>
+      <p>按「如何接入多轮信号」分五类：</p>
+      <table>
+        <thead><tr><th>类别</th><th>代表方法</th><th>核心思路</th></tr></thead>
+        <tbody>
+          <tr><td>Token-level 改造</td><td><strong>CAPO、GRPO-λ</strong></td><td>不改抽象，只改 advantage 计算</td></tr>
+          <tr><td>Utterance-level 抽象</td><td><strong>ArCHer</strong></td><td>高层 utterance critic + 低层 token actor</td></tr>
+          <tr><td>Trajectory 偏好</td><td><strong>MTPO</strong></td><td>真人对比两段对话，Nash 均衡优化</td></tr>
+          <tr><td>模拟回报</td><td><strong>CollabLLM</strong></td><td>LLM 模拟用户继续聊 w 轮，整段质量做 reward</td></tr>
+          <tr><td>多 agent 协作</td><td><strong>DoctorAgent-RL</strong></td><td>Doctor + Patient + Evaluator 三 agent + 动态 turn budget</td></tr>
+        </tbody>
+      </table>
+
+      <h3>1.3 主要信息源（6 篇全部 verify_arxiv 通过）</h3>
+
+      <div class="source-card algo">
+        <div class="src-title"><span class="tag paper">论文</span>ArCHer: Training Language Model Agents via Hierarchical Multi-Turn RL</div>
+        <div class="src-meta">Zhou, Zanette, Pan, Levine, Kumar · <strong>UC Berkeley + CMU + Google DeepMind</strong> · ICML 2024 · <a href="https://arxiv.org/abs/2402.19446">arXiv:2402.19446</a></div>
+        <div class="src-note">分层 RL：高层在 utterance 级别选 sub-goal，低层 token-level policy 在 sub-goal 约束下生成。21 个环境验证，<strong>样本效率比 PPO 高约 100×</strong>。</div>
+      </div>
+
+      <div class="source-card algo">
+        <div class="src-title"><span class="tag paper">论文</span>Multi-turn Reinforcement Learning from Preference Human Feedback (MTPO) ⭐</div>
+        <div class="src-meta">Shani, Rosenberg, Cassel et al. · <strong>Google Research + DeepMind + Tel Aviv University</strong> · NeurIPS 2024 · <a href="https://arxiv.org/abs/2405.14655">arXiv:2405.14655</a></div>
+        <div class="src-note">把 RLHF 从单轮 bandit 升到多轮 Contextual MDP。<strong>只在末态给偏好</strong>（避免逐轮标注的破坏性偏差），不假设 BT 模型，目标是 Nash 均衡。Mirror descent + KL 分解引理让计算可解。<strong>有 O(1/T) 收敛保证</strong>。</div>
+      </div>
+
+      <div class="source-card algo">
+        <div class="src-title"><span class="tag paper">论文</span>CollabLLM: From Passive Responders to Active Collaborators ⭐</div>
+        <div class="src-meta">Shirley Wu, Michel Galley, Baolin Peng, Hao Cheng, Jianfeng Gao et al. · <strong>Stanford + Microsoft Research</strong> · arXiv 2025-02 · <a href="https://arxiv.org/abs/2502.00640">arXiv:2502.00640</a></div>
+        <div class="src-note"><strong>Multiturn-aware Rewards (MR)</strong>：让 LLM 模拟用户继续聊 w=2 轮，每个候选采 3 条轨迹取均值，用整段对话质量评价当前回复。本质是 Monte Carlo rollout——把「评价单轮」转化为「评价从这一轮出发的整段对话」。Online DPO 变体在三个 chat benchmark 上任务质量 +5-32%，token 数 -8-18%。</div>
+      </div>
+
+      <div class="source-card algo">
+        <div class="src-title"><span class="tag paper">论文</span>CAPO: Towards Enhancing LLM Reasoning through Generative Credit Assignment</div>
+        <div class="src-meta">arXiv 2025-08 · <a href="https://arxiv.org/abs/2508.02298">arXiv:2508.02298</a></div>
+        <div class="src-note">解决 RLVR 中「所有 token 共享同一 reward 无法精确归因」问题，用生成式信用分配。</div>
+      </div>
+
+      <div class="source-card algo">
+        <div class="src-title"><span class="tag paper">论文</span>GRPO-λ: Credit Assignment improves LLM Reasoning</div>
+        <div class="src-meta">arXiv 2025-09 · <a href="https://arxiv.org/abs/2510.00194">arXiv:2510.00194</a></div>
+        <div class="src-note">GRPO 基础上引入 TD(λ) 思想，让不同 token 位置获不同权重的奖励信号，不增加 value network。</div>
+      </div>
+
+      <div class="source-card algo">
+        <div class="src-title"><span class="tag paper">论文</span>Real-World Doctor Agent with Proactive Consultation through Multi-Agent RL (DoctorAgent-RL) ⭐</div>
+        <div class="src-meta">Feng et al. · <strong>中科院 + 国科大 + 中科大 + 中山大学 + 广州实验室</strong> · arXiv 2025-05 · <a href="https://arxiv.org/abs/2505.19630">arXiv:2505.19630</a></div>
+        <div class="src-note">三 agent 框架（Doctor + Patient + Evaluator）+ 推理蒸馏 + GRPO + 动态 turn budget + 三维 reward（诊断准确性 + 信息收集效率 + 问诊规范性）。70% exact diagnostic match rate。<strong>结构上和客服多轮 RL 一一对应</strong>。</div>
+      </div>
+    </section>
+
+    <!-- 评估层 -->
+    <section id="eval">
+      <h2>二、评估层：怎么评价训出来的 policy</h2>
+
+      <h3>2.1 三个核心难点</h3>
+      <ol>
+        <li><strong>没有 ground truth</strong>：任务型对话（订餐、订票）有客观成功率，但开放式对话（客服、辅导、闲聊）没有。</li>
+        <li><strong>评估器本身可能不可靠</strong>：LLM-as-judge 有 position / length / style bias；user simulator 容易「过度配合」。</li>
+        <li><strong>离线 vs 在线 gap 巨大</strong>：在 sim 上跑得好，部署到真人就崩——MTPO 论文 Section 3 已经形式化了「逐轮标偏好的破坏性偏差」。</li>
+      </ol>
+
+      <h3>2.2 三种主流评估范式</h3>
+      <table>
+        <thead><tr><th>范式</th><th>代表工作</th><th>优点</th><th>缺点</th></tr></thead>
+        <tbody>
+          <tr><td><strong>LLM-as-judge</strong></td><td>MT-Bench (2306.05685)、MT-Bench-101 (2402.14762)</td><td>可批量、可重复</td><td>三大 bias、judge 自己也可能错</td></tr>
+          <tr><td><strong>User Simulator-based</strong></td><td>DAUS (2402.13374)、Balog &amp; Zhai 综述 (2501.04410)</td><td>可批量、能跑多轮</td><td>sim2real gap、过度配合问题</td></tr>
+          <tr><td><strong>Multi-turn Interaction Benchmark</strong></td><td>MINT (2309.10691)</td><td>含真实工具 + 反馈循环</td><td>主要是开发者评估，标注成本高</td></tr>
+        </tbody>
+      </table>
+
+      <h3>2.3 主要信息源（5 篇全部 verify_arxiv 通过）</h3>
+
+      <div class="source-card foundation">
+        <div class="src-title"><span class="tag paper">论文</span>Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena ⭐</div>
+        <div class="src-meta">Zheng, Chiang et al. · <strong>UC Berkeley + Stanford + UCSD + CMU</strong> · NeurIPS 2023 · <a href="https://arxiv.org/abs/2306.05685">arXiv:2306.05685</a></div>
+        <div class="src-note"><strong>LLM-as-a-judge 的奠基论文</strong>。提出 MT-Bench（80 个高质量多轮问题，覆盖 8 类能力）+ Chatbot Arena（众包配对偏好平台）。核心结论：<strong>强 LLM judge（GPT-4）和人类偏好的一致性达 80%+</strong>。但同时识别出三大 bias：<strong>position bias</strong>（先看到的更被偏好）、<strong>verbosity bias</strong>（长回复打高分）、<strong>self-enhancement bias</strong>（judge 偏向风格相似的）。这篇论文之后整个领域的 LLM-as-judge 实践都基于它的方法论。</div>
+      </div>
+
+      <div class="source-card eval">
+        <div class="src-title"><span class="tag bench">基准</span>MT-Bench-101: A Fine-Grained Benchmark for Multi-Turn Dialogues</div>
+        <div class="src-meta">Bai, Liu et al. · ACL 2024 · <a href="https://arxiv.org/abs/2402.14762">arXiv:2402.14762</a></div>
+        <div class="src-note">把 MT-Bench 从 8 类粗粒度细化到 <strong>13 个任务 + 三层能力分类 + 4208 测试样本</strong>。三层结构：感知（perceptivity）→ 适应（adaptability）→ 互动（interactivity）。<strong>对客服 RL 训练的实操意义</strong>：可以参照这个分类法切 reward 维度，比五维 reward 设计更细。</div>
+      </div>
+
+      <div class="source-card eval">
+        <div class="src-title"><span class="tag paper">论文</span>Reliable LLM-based User Simulator for Task-Oriented Dialogue Systems (DAUS)</div>
+        <div class="src-meta">Sekulic et al. · arXiv 2024-02 · <a href="https://arxiv.org/abs/2402.13374">arXiv:2402.13374</a></div>
+        <div class="src-note">专门研究「LLM 当 user simulator 怎么训得可靠」。核心发现：vanilla LLM simulator 在 task-oriented 对话上经常<strong>目标漂移</strong>（说着说着忘记自己要订餐），DAUS 通过特定训练让 simulator 行为可预测。</div>
+      </div>
+
+      <div class="source-card eval">
+        <div class="src-title"><span class="tag survey">综述</span>User Simulation in the Era of Generative AI</div>
+        <div class="src-meta">Balog &amp; Zhai · arXiv 2025-01 · <a href="https://arxiv.org/abs/2501.04410">arXiv:2501.04410</a></div>
+        <div class="src-note">完整标题：User Modeling, Synthetic Data Generation, and System Evaluation。<strong>2025 年 user simulator 领域综述</strong>。三大用途：用户建模（理解真人）、合成数据生成（喂训练）、系统评估（验证 policy）。明确写下「user simulator 的两类对抗性目标」：训练要多样、评估要保真。</div>
+      </div>
+
+      <div class="source-card eval">
+        <div class="src-title"><span class="tag bench">基准</span>MINT: Evaluating LLMs in Multi-turn Interaction with Tools and Language Feedback</div>
+        <div class="src-meta">Wang, Wang et al. · ICLR 2024 · <a href="https://arxiv.org/abs/2309.10691">arXiv:2309.10691</a></div>
+        <div class="src-note">评估 LLM 在多轮交互中的<strong>工具使用 + 语言反馈适应能力</strong>。覆盖代码执行、信息检索等任务类型。<strong>对客服 RL 的意义</strong>：客服多轮也是「agent 调工具（查订单/催骑手）+ 根据用户反馈调整」，MINT 的评估协议可以直接迁移。</div>
+      </div>
+    </section>
+
+    <!-- 跨方向交叉 -->
+    <section id="cross">
+      <h2>三、跨方向交叉判断</h2>
+
+      <h3>3.1 算法层和评估层的耦合</h3>
+      <p><strong>算法选择往往被评估方法绑架</strong>：</p>
+      <ul>
+        <li>用 <strong>MT-Bench 类静态 benchmark</strong> 评估 → 鼓励产出「看起来好的回复」，适合 CAPO / GRPO-λ 这类 token-level 优化</li>
+        <li>用 <strong>user simulator 在线评估</strong> → 鼓励多轮规划，适合 ArCHer / MTPO / CollabLLM</li>
+        <li>用 <strong>真实任务完成率</strong>（订单是否成功、诊断是否正确）→ 鼓励直奔结果，适合 DoctorAgent-RL 这类多 agent 协作</li>
+      </ul>
+
+      <blockquote>
+        <strong>结论</strong>：选算法之前先想清楚 evaluation pipeline。否则会出现「训得很好但评不出来」或「评得很高但部署翻车」。
+      </blockquote>
+    </section>
+
+    <!-- 开放问题 -->
+    <section id="open">
+      <h2>四、最重的一个开放问题</h2>
+
+      <div class="risk-box">
+        <strong>评估器自己的系统性偏差还没解决</strong>。LLM-as-judge 的三大 bias（MT-Bench 论文已识别）+ User simulator 的过度配合问题（CollabLLM 自己承认了）= 整个评估层有系统性偏差。算法层论文报的 +5%/+18%/+32% 这些数字，<strong>实际有多少是真提升、多少是评估器偏差，没人说得清</strong>。<br><br>
+        这是当前多轮对话 RL 最大的方法论 debt。
+      </div>
+    </section>
+
+    <!-- 对客服的建议 -->
+    <section id="advice">
+      <h2>五、对客服场景的具体建议</h2>
+      <p>不展开，直接指向客服 RL 报告：<a href="../long-horizon-rl-customer-service/">客服对话仿真系统下的长序 RL 训练</a>。本报告的增量是把「评估层」作为单独主线讨论。</p>
+
+      <h4>两个直接可操作建议</h4>
+      <ol>
+        <li><strong>训练之前先固化评估流水线</strong>：MT-Bench-101 风格的能力分类 + DAUS 风格的 simulator + 真实日志的 task success rate，三者并跑。</li>
+        <li><strong>不要只看一个 evaluator</strong>。MT-Bench 论文里就明确说「用多个 judge + 校准对人类一致性」是降低 bias 的最佳实践。</li>
+      </ol>
+    </section>
+
+    <!-- 参考文献 -->
+    <section id="refs">
+      <h2>参考文献（11 篇全部 verify_arxiv 通过）</h2>
+
+      <h4>算法层（6 篇）</h4>
+      <ol>
+        <li><a href="https://arxiv.org/abs/2402.19446">ArCHer</a> — Zhou et al., ICML 2024</li>
+        <li><a href="https://arxiv.org/abs/2405.14655">MTPO</a> — Shani et al., NeurIPS 2024</li>
+        <li><a href="https://arxiv.org/abs/2502.00640">CollabLLM</a> — Wu et al., 2025-02</li>
+        <li><a href="https://arxiv.org/abs/2508.02298">CAPO</a> — 2025-08</li>
+        <li><a href="https://arxiv.org/abs/2510.00194">GRPO-λ</a> — 2025-09</li>
+        <li><a href="https://arxiv.org/abs/2505.19630">DoctorAgent-RL</a> — Feng et al., 2025-05</li>
+      </ol>
+
+      <h4>评估层（5 篇）</h4>
+      <ol start="7">
+        <li><a href="https://arxiv.org/abs/2306.05685">MT-Bench / LLM-as-Judge</a> — Zheng et al., NeurIPS 2023</li>
+        <li><a href="https://arxiv.org/abs/2402.14762">MT-Bench-101</a> — Bai et al., ACL 2024</li>
+        <li><a href="https://arxiv.org/abs/2402.13374">DAUS</a> — Sekulic et al., 2024</li>
+        <li><a href="https://arxiv.org/abs/2501.04410">User Sim Era of GenAI 综述</a> — Balog &amp; Zhai, 2025</li>
+        <li><a href="https://arxiv.org/abs/2309.10691">MINT</a> — Wang et al., ICLR 2024</li>
+      </ol>
+
+      <p style="text-align:center; color:var(--muted); font-size:13px; margin-top:36px; padding-top:20px; border-top:1px solid var(--line);">
+        报告完 · 11 篇 arXiv 论文 · 全部经 <code>verify_arxiv.sh</code> 双验 · 由 Claude Code autopilot 生成
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<button class="top-btn" id="topBtn" onclick="window.scrollTo({top:0, behavior:'smooth'})" title="回到顶部">↑</button>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('topBtn');
+    if (window.scrollY > 400) btn.classList.add('show');
+    else btn.classList.remove('show');
+  });
+</script>
+
+</body>
+</html>

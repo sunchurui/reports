@@ -1,5 +1,20 @@
 [
   {
+    "slug": "multi-turn-rl-survey",
+    "title": "多轮对话强化学习调研报告（速览）",
+    "date": "2026-06-02",
+    "summary": "覆盖算法层（ArCHer / MTPO / CollabLLM / CAPO / GRPO-λ / DoctorAgent-RL）和评估层（MT-Bench / MT-Bench-101 / DAUS / MINT）两条主线，11 篇 arXiv 论文全部经 verify_arxiv 双验。最重要的发现：评估层成熟度比算法层低一个量级，LLM-as-judge 三大 bias + user simulator 过度配合让算法报的数字都打折扣。",
+    "tags": [
+      "reinforcement-learning",
+      "multi-turn-dialogue",
+      "RLHF",
+      "evaluation",
+      "research"
+    ],
+    "sources": 11,
+    "chars": 1673
+  },
+  {
     "slug": "long-horizon-rl-customer-service",
     "title": "客服对话仿真系统下的长序强化学习训练",
     "date": "2026-05-31",
