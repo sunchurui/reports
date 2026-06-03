@@ -1,5 +1,20 @@
 [
   {
+    "slug": "dialogue-action-extraction",
+    "title": "真人对话动作化（Dialogue Action Extraction）调研报告",
+    "date": "2026-06-03",
+    "summary": "把真人对话日志转成结构化动作序列，及其下游应用。覆盖抽取层（LLM-as-extractor / codebook injection / 多模态 intent）+ 使用层（process reward / trajectory 偏好 / 多 agent）+ 分层 RL 场景（ArCHer / MTPO / DMPO / CAPO / GRPO-λ）三个方向。14 篇 arXiv 论文全部 verify_arxiv 双验。核心论点：动作化本身不难，难点在 schema 设计和下游怎么用——抽取层和使用层是同一件事的两面。",
+    "tags": [
+      "dialogue-action",
+      "RLHF",
+      "hierarchical-RL",
+      "annotation",
+      "research"
+    ],
+    "sources": 14,
+    "chars": 2443
+  },
+  {
     "slug": "multi-turn-rl-survey",
     "title": "多轮对话强化学习调研报告（速览）",
     "date": "2026-06-02",
